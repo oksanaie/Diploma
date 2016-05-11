@@ -42,14 +42,6 @@ print('LogisticRegression score: %f'
       % logistic.fit(train_X, train_y).score(test_X, test_y))
 Predicted_probability_distribution = logistic.predict_proba(test_X)
 #print logistic.classes_
-#
-#
-# That is my awesome dev changes
-#
-# More awesome dev changes
-#
-#
-#
 
 AP = 0
 k = -1
