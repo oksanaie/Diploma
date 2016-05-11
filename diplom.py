@@ -34,7 +34,7 @@ for line in train:
 
 # print train_X[0], train_y[0]
 # print test_X[0], test_y[0]
-#
+
 from sklearn import linear_model
 logistic = linear_model.LogisticRegression(C = 1, solver = 'lbfgs', 
     multi_class = 'multinomial', max_iter = 100)
