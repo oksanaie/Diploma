@@ -34,10 +34,10 @@ for line in train:
 
 # print train_X[0], train_y[0]
 # print test_X[0], test_y[0]
-
+#
 from sklearn import linear_model
-logistic = linear_model.LogisticRegression(C = 2, solver = 'newton-cg', 
-    multi_class = 'ovr', max_iter = 10000)
+logistic = linear_model.LogisticRegression(C = 1, solver = 'lbfgs', 
+    multi_class = 'multinomial', max_iter = 100)
 print('LogisticRegression score: %f'
       % logistic.fit(train_X, train_y).score(test_X, test_y))
 Predicted_probability_distribution = logistic.predict_proba(test_X)
