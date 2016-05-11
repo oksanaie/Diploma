@@ -31,7 +31,7 @@ for line in train:
         test_y.append(label)
     else: 
         break
-
+#
 # print train_X[0], train_y[0]
 # print test_X[0], test_y[0]
 
