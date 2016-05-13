@@ -57,16 +57,17 @@ logistic = linear_model.LogisticRegression(C = 1, solver = 'lbfgs',
     multi_class = 'multinomial', max_iter = 100)
 print('LogisticRegression score: %f'
       % logistic.fit(train_X, train_y).score(test_X, test_y))
+
 predicted_probability_distribution_test = logistic.predict_proba(test_X)
 predicted_probability_distribution_train = logistic.predict_proba(train_X)
-list_of_classes = logistic.classes_
+
 
 MAP_test = mean_average_precision(predicted_probability_distribution_test, 
-                                    list_of_classes, 
+                                    logistic.classes_, 
                                     test_y)
 print MAP_test
 MAP_train = mean_average_precision(predicted_probability_distribution_train, 
-                                    list_of_classes, 
+                                    logistic.classes_, 
                                     train_y) 
 print MAP_train
 # from sklearn import svm
