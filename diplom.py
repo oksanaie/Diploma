@@ -10,22 +10,20 @@ def parse(line):
     return (features, label)
 
 def mean_average_precision (predicted_probability_distribution, 
-    n_of_classes, 
     list_of_classes, 
-    test_y, 
-    dataset_size):
-    AP = 0
+    test_y):
+    total_error = 0
     k = -1
     for row in predicted_probability_distribution:
         k += 1
         classes_by_prob = []
-        for i in xrange(0, n_of_classes):
+        for i in xrange(0, len(list_of_classes)):
             classes_by_prob.append([row[i], list_of_classes[i]])
             classes_by_prob.sort(reverse=True)    
         for j in range (0, 5):
             if classes_by_prob[j][1] == test_y[k]:
-                AP += 1.0 / (j+1)
-    MAP = AP / dataset_size
+                total_error += 1.0 / (j + 1)
+    MAP = tot / len(predicted_probability_distribution)
     return MAP
 
 TRAIN_DATASET_SIZE = 30000
