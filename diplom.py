@@ -10,8 +10,8 @@ def parse(line):
     return (features, label)
 
 def mean_average_precision(predicted_probability_distribution, 
-                            list_of_classes, 
-                            test_y):
+                           list_of_classes, 
+                           test_y):
     total_error = 0
     k = -1
     for row in predicted_probability_distribution:
@@ -63,8 +63,8 @@ predicted_probability_distribution_train = logistic.predict_proba(train_X)
 
 
 MAP_test = mean_average_precision(predicted_probability_distribution_test, 
-                                    logistic.classes_, 
-                                    test_y)
+                                  logistic.classes_, 
+                                  test_y)
 print MAP_test
 MAP_train = mean_average_precision(predicted_probability_distribution_train, 
                                     logistic.classes_, 
