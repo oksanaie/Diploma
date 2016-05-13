@@ -67,8 +67,8 @@ MAP_test = mean_average_precision(predicted_probability_distribution_test,
                                   test_y)
 print MAP_test
 MAP_train = mean_average_precision(predicted_probability_distribution_train, 
-                                    logistic.classes_, 
-                                    train_y) 
+                                   logistic.classes_, 
+                                   train_y) 
 print MAP_train
 # from sklearn import svm
 # clf = svm.SVC()
