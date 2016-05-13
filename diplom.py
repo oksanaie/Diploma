@@ -29,7 +29,7 @@ def mean_average_precision (predicted_probability_distribution,
     return MAP
 
 TRAIN_DATASET_SIZE = 30000
-dataset_size = 30000
+TEST_DATASET_SIZE = 30000
 
 train = open ('train.csv', 'r')
 train_X = []
@@ -45,7 +45,7 @@ for line in train:
     if cnt <= TRAIN_DATASET_SIZE:
         train_X.append(features)
         train_y.append(label)
-    elif cnt <= TRAIN_DATASET_SIZE + dataset_size:
+    elif cnt <= TRAIN_DATASET_SIZE + TEST_DATASET_SIZE:
         test_X.append(features)
         test_y.append(label)
     else: 
@@ -66,7 +66,7 @@ MAP = mean_average_precision (predicted_probability_distribution,
     n_of_classes, 
     list_of_classes, 
     test_y, 
-    dataset_size)
+    TEST_DATASET_SIZE)
 
 print MAP 
 # from sklearn import svm
