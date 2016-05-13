@@ -10,8 +10,8 @@ def parse(line):
     return (features, label)
 
 def mean_average_precision(predicted_probability_distribution, 
-    list_of_classes, 
-    test_y):
+                            list_of_classes, 
+                            test_y):
     total_error = 0
     k = -1
     for row in predicted_probability_distribution:
@@ -62,12 +62,12 @@ predicted_probability_distribution_train = logistic.predict_proba(train_X)
 list_of_classes = logistic.classes_
 
 MAP_test = mean_average_precision(predicted_probability_distribution_test, 
-    list_of_classes, 
-    test_y)
+                                    list_of_classes, 
+                                    test_y)
 print MAP_test
 MAP_train = mean_average_precision(predicted_probability_distribution_train, 
-    list_of_classes, 
-    train_y) 
+                                    list_of_classes, 
+                                    train_y) 
 print MAP_train
 # from sklearn import svm
 # clf = svm.SVC()
