@@ -9,6 +9,23 @@ def parse(line):
     label = int (tokens[23])
     return (features, label)
 
+def mean_average_precision(predicted_probability_distribution, 
+                           list_of_classes, 
+                           test_y):
+    total_error = 0
+    k = -1
+    for row in predicted_probability_distribution:
+        k += 1
+        classes_by_prob = []
+        for i in xrange(0, len(list_of_classes)):
+            classes_by_prob.append([row[i], list_of_classes[i]])
+            classes_by_prob.sort(reverse=True)    
+        for j in range (0, 5):
+            if classes_by_prob[j][1] == test_y[k]:
+                total_error += 1.0 / (j + 1)
+    
+    return total_error / len(predicted_probability_distribution)
+
 TRAIN_DATASET_SIZE = 30000
 TEST_DATASET_SIZE = 30000
 
@@ -40,22 +57,19 @@ logistic = linear_model.LogisticRegression(C = 1, solver = 'lbfgs',
     multi_class = 'multinomial', max_iter = 100)
 print('LogisticRegression score: %f'
       % logistic.fit(train_X, train_y).score(test_X, test_y))
-Predicted_probability_distribution = logistic.predict_proba(test_X)
-#print logistic.classes_
 
-AP = 0
-k = -1
-for row in Predicted_probability_distribution:
-    k += 1
-    r =[]
-    for i in xrange(0, len(logistic.classes_)):
-        r.append([row[i], logistic.classes_[i]])
-    r.sort(reverse=True)    
-    for j in range (0, 5):
-        if r[j][1] == test_y[k]:
-            AP += 1.0/(j+1)
-MAP = AP / TEST_DATASET_SIZE
-print (MAP)
+predicted_probability_distribution_test = logistic.predict_proba(test_X)
+predicted_probability_distribution_train = logistic.predict_proba(train_X)
+
+
+MAP_test = mean_average_precision(predicted_probability_distribution_test, 
+                                  logistic.classes_, 
+                                  test_y)
+print MAP_test
+MAP_train = mean_average_precision(predicted_probability_distribution_train, 
+                                   logistic.classes_, 
+                                   train_y) 
+print MAP_train
 # from sklearn import svm
 # clf = svm.SVC()
 # clf.fit (r, b)
@@ -63,21 +77,7 @@ print (MAP)
 # print "hello"
 
 # # head -n1500 train.csv > minitest.txt
-# z = open ('minitest.txt', 'r')
-# c = []
-# for line in z:
-#   c.append(line)
-# t = []
-# for i in xrange(1501, len(c)):
-#   t.append(c[i])
-# for i in range(len(t)):
-#   t[i] = t[i].split(',')
-# tr = []
-# for i in t:
-#   tr.append([i[13], i[14], i[15], i[16], i[17], i[18], i[19], i[20], i[21], i[22]])
-# ta = []
-# for i in t:
-#   ta.append(i[23])
+
 
 # #print (tr)
 # print(clf.predict(tr))
