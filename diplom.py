@@ -23,8 +23,8 @@ def mean_average_precision(predicted_probability_distribution,
         for j in range (0, 5):
             if classes_by_prob[j][1] == test_y[k]:
                 total_error += 1.0 / (j + 1)
-    MAP = total_error / len(predicted_probability_distribution)
-    return MAP
+    
+    return total_error / len(predicted_probability_distribution)
 
 TRAIN_DATASET_SIZE = 30000
 TEST_DATASET_SIZE = 30000
