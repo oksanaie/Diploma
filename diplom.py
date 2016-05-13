@@ -26,6 +26,7 @@ def mean_average_precision (predicted_probability_distribution,
             if classes_by_prob[j][1] == test_y[k]:
                 AP += 1.0 / (j+1)
     MAP = AP / dataset_size
+    return MAP
 
 TRAIN_DATASET_SIZE = 30000
 dataset_size = 30000
@@ -61,9 +62,13 @@ print('LogisticRegression score: %f'
 predicted_probability_distribution = logistic.predict_proba(test_X)
 n_of_classes = len(logistic.classes_)
 list_of_classes = logistic.classes_
+MAP = mean_average_precision (predicted_probability_distribution, 
+    n_of_classes, 
+    list_of_classes, 
+    test_y, 
+    dataset_size)
 
-
-print 
+print MAP 
 # from sklearn import svm
 # clf = svm.SVC()
 # clf.fit (r, b)
