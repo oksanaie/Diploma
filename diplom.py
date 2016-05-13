@@ -9,22 +9,26 @@ def parse(line):
     label = int (tokens[23])
     return (features, label)
 
-def Mean_Average_Precision (Predicted_probability_distribution, n_of_classes, list_of_classes, test_y, TEST_DATASET_SIZE):
+def mean_average_precision (predicted_probability_distribution, 
+    n_of_classes, 
+    list_of_classes, 
+    test_y, 
+    dataset_size):
     AP = 0
     k = -1
-    for row in Predicted_probability_distribution:
+    for row in predicted_probability_distribution:
         k += 1
-        r =[]
+        classes_by_prob = []
         for i in xrange(0, n_of_classes):
-            r.append([row[i], list_of_classes[i]])
-            r.sort(reverse=True)    
+            classes_by_prob.append([row[i], list_of_classes[i]])
+            classes_by_prob.sort(reverse=True)    
         for j in range (0, 5):
-            if r[j][1] == test_y[k]:
-                AP += 1.0/(j+1)
-    MAP = AP / TEST_DATASET_SIZE
+            if classes_by_prob[j][1] == test_y[k]:
+                AP += 1.0 / (j+1)
+    MAP = AP / dataset_size
 
 TRAIN_DATASET_SIZE = 30000
-TEST_DATASET_SIZE = 30000
+dataset_size = 30000
 
 train = open ('train.csv', 'r')
 train_X = []
@@ -40,7 +44,7 @@ for line in train:
     if cnt <= TRAIN_DATASET_SIZE:
         train_X.append(features)
         train_y.append(label)
-    elif cnt <= TRAIN_DATASET_SIZE + TEST_DATASET_SIZE:
+    elif cnt <= TRAIN_DATASET_SIZE + dataset_size:
         test_X.append(features)
         test_y.append(label)
     else: 
@@ -54,23 +58,12 @@ logistic = linear_model.LogisticRegression(C = 1, solver = 'lbfgs',
     multi_class = 'multinomial', max_iter = 100)
 print('LogisticRegression score: %f'
       % logistic.fit(train_X, train_y).score(test_X, test_y))
-Predicted_probability_distribution = logistic.predict_proba(test_X)
+predicted_probability_distribution = logistic.predict_proba(test_X)
 n_of_classes = len(logistic.classes_)
 list_of_classes = logistic.classes_
 
-AP = 0
-k = -1
-for row in Predicted_probability_distribution:
-    k += 1
-    r =[]
-    for i in xrange(0, len(logistic.classes_)):
-        r.append([row[i], logistic.classes_[i]])
-    r.sort(reverse=True)    
-    for j in range (0, 5):
-        if r[j][1] == test_y[k]:
-            AP += 1.0/(j+1)
-MAP = AP / TEST_DATASET_SIZE
-print (MAP)
+
+print 
 # from sklearn import svm
 # clf = svm.SVC()
 # clf.fit (r, b)
