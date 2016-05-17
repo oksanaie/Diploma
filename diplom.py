@@ -1,4 +1,6 @@
 #!/usr/bin/python
+import ml_metrics as metrics
+
 print "hello"
 
 def parse(line):
@@ -19,7 +21,7 @@ def mean_average_precision(predicted_probability_distribution,
         classes_by_prob = []
         for i in xrange(0, len(list_of_classes)):
             classes_by_prob.append([row[i], list_of_classes[i]])
-            classes_by_prob.sort(reverse=True)    
+        classes_by_prob.sort(reverse=True)    
         for j in range (0, 5):
             if classes_by_prob[j][1] == test_y[k]:
                 total_error += 1.0 / (j + 1)
@@ -61,15 +63,26 @@ print('LogisticRegression score: %f'
 predicted_probability_distribution_test = logistic.predict_proba(test_X)
 predicted_probability_distribution_train = logistic.predict_proba(train_X)
 
-
-MAP_test = mean_average_precision(predicted_probability_distribution_test, 
-                                  logistic.classes_, 
-                                  test_y)
-print MAP_test
-MAP_train = mean_average_precision(predicted_probability_distribution_train, 
-                                   logistic.classes_, 
-                                   train_y) 
-print MAP_train
+classes_by_probability = []
+k = -1
+for row in predicted_probability_distribution_test:
+    k += 1
+    classes_by_prob = []
+    for i in xrange(0, len(logistic.classes_)):
+        classes_by_prob.append([row[i], logistic.classes_[i]])
+    classes_by_prob.sort(reverse=True)    
+    for i in xrange(0, len(logistic.classes_)):
+        classes_by_prob[i] = classes_by_prob[i][1]
+    classes_by_probability.append(classes_by_prob)
+print metrics.mapk(test_y, classes_by_probability, k = 5)
+# MAP_test = mean_average_precision(predicted_probability_distribution_test, 
+#                                   logistic.classes_, 
+#                                   test_y)
+# print MAP_test
+# MAP_train = mean_average_precision(predicted_probability_distribution_train, 
+#                                    logistic.classes_, 
+#                                    train_y) 
+# print MAP_train
 # from sklearn import svm
 # clf = svm.SVC()
 # clf.fit (r, b)
