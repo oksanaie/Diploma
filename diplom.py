@@ -3,9 +3,9 @@ import ml_metrics as metrics
 import argparse
 
 parser = argparse.ArgumentParser()
-parser.add_argument('-logreg', '--forest')
+parser.add_argument("--model", choices=["random_forest", "logistic_regression"], default=["random_forest"], dest="model")
 args = parser.parse_args()
-print args
+print args.model
 
 print "hello"
 
