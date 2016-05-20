@@ -78,8 +78,8 @@ model.fit(train_X, train_y)
 predicted_probability_distribution_test = model.predict_proba(test_X)
 predicted_probability_distribution_train = model.predict_proba(train_X)
 
-training_time = time.time() - train_start_time
-print "Training time: %.3f" % training_time
+train_predict_time = time.time() - train_start_time
+print "Training + prediction time: %.3f" % training_time
 
 MAP_test = mean_average_precision(predicted_probability_distribution_test, 
                                   model.classes_, 
