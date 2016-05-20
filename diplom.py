@@ -3,6 +3,7 @@ import ml_metrics as metrics
 import argparse
 from sklearn import linear_model
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.neighbors import KNeighborsClassifier
 
 def parse(line):
     tokens = line.split(',')
@@ -30,12 +31,12 @@ def mean_average_precision(predicted_probability_distribution,
     return total_error / len(predicted_probability_distribution)
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--model", choices=["random_forest", "logistic_regression"], default=["random_forest"], dest="model")
+parser.add_argument("--model", choices=["random_forest", "k_neighbors", "logistic_regression"], default=["random_forest"], dest="model")
 args = parser.parse_args()
 print "Model used in this run is %s" % args.model
 
-TRAIN_DATASET_SIZE = 30000
-TEST_DATASET_SIZE = 30000
+TRAIN_DATASET_SIZE = 300000
+TEST_DATASET_SIZE = 300000
 
 train = open ('train.csv', 'r')
 train_X = []
@@ -60,6 +61,8 @@ for line in train:
 if args.model == "logistic_regression":
     model = linear_model.LogisticRegression(C=1, solver='lbfgs', 
                                             multi_class='multinomial', max_iter=100)
+elif args.model == "k_neighbors":
+    model = KNeighborsClassifier(n_neighbors=10)
 else:
     model = RandomForestClassifier(n_estimators=100)
 
