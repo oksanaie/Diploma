@@ -1,4 +1,5 @@
 #!/usr/bin/python
+import time
 import ml_metrics as metrics
 import argparse
 from sklearn import linear_model
@@ -30,6 +31,8 @@ def mean_average_precision(predicted_probability_distribution,
     
     return total_error / len(predicted_probability_distribution)
 
+start_time = time.time()
+
 parser = argparse.ArgumentParser()
 parser.add_argument("--model", choices=["random_forest", "k_neighbors", "logistic_regression"], default=["random_forest"], dest="model")
 args = parser.parse_args()
@@ -60,11 +63,11 @@ for line in train:
 
 if args.model == "logistic_regression":
     model = linear_model.LogisticRegression(C=1, solver='lbfgs', 
-                                            multi_class='multinomial', max_iter=100)
+                                            multi_class='multinomial', max_iter=100, n_jobs=-1)
 elif args.model == "k_neighbors":
-    model = KNeighborsClassifier(n_neighbors=10)
+    model = KNeighborsClassifier(n_neighbors=10, n_jobs=-1)
 else:
-    model = RandomForestClassifier(n_estimators=100)
+    model = RandomForestClassifier(n_estimators=100, n_jobs=-1)
 
 model.fit(train_X, train_y)
 
@@ -79,3 +82,6 @@ MAP_train = mean_average_precision(predicted_probability_distribution_train,
                                    model.classes_, 
                                    train_y) 
 print "MAP on train data: %.3f" % MAP_train
+
+elapsed_time = time.time() - start_time
+print elapsed_time
