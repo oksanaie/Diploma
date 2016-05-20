@@ -4,11 +4,6 @@ import argparse
 from sklearn import linear_model
 from sklearn.ensemble import RandomForestClassifier
 
-parser = argparse.ArgumentParser()
-parser.add_argument("--model", choices=["random_forest", "logistic_regression"], default=["random_forest"], dest="model")
-args = parser.parse_args()
-print "Model used in this run is %s" % args.model
-
 def parse(line):
     tokens = line.split(',')
     features = [tokens[3], tokens[4], tokens[5], tokens[13], tokens[14], tokens[15], tokens[16], 
@@ -33,6 +28,11 @@ def mean_average_precision(predicted_probability_distribution,
                 total_error += 1.0 / (j + 1)
     
     return total_error / len(predicted_probability_distribution)
+
+parser = argparse.ArgumentParser()
+parser.add_argument("--model", choices=["random_forest", "logistic_regression"], default=["random_forest"], dest="model")
+args = parser.parse_args()
+print "Model used in this run is %s" % args.model
 
 TRAIN_DATASET_SIZE = 30000
 TEST_DATASET_SIZE = 30000
