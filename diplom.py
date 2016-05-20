@@ -1,13 +1,14 @@
 #!/usr/bin/python
 import ml_metrics as metrics
 import argparse
+from sklearn import linear_model
+from sklearn.ensemble import RandomForestClassifier
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--model", choices=["random_forest", "logistic_regression"], default=["random_forest"], dest="model")
 args = parser.parse_args()
-print args.model
+print "Model used in this run is %s" % args.model
 
-print "hello"
 
 def parse(line):
     tokens = line.split(',')
@@ -28,7 +29,7 @@ def mean_average_precision(predicted_probability_distribution,
         for i in xrange(0, len(list_of_classes)):
             classes_by_prob.append([row[i], list_of_classes[i]])
         classes_by_prob.sort(reverse=True)    
-        for j in range (0, 5):
+        for j in range (0, min(5, len(classes_by_prob))):
             if classes_by_prob[j][1] == test_y[k]:
                 total_error += 1.0 / (j + 1)
     
@@ -60,48 +61,27 @@ for line in train:
 # print train_X[0], train_y[0]
 # print test_X[0], test_y[0]
 
-from sklearn import linear_model
-from sklearn.ensemble import RandomForestClassifier
+
 if args.model == "logistic_regression":
     logistic = linear_model.LogisticRegression(C = 1, solver = 'lbfgs', 
                                                multi_class = 'multinomial', max_iter = 100)
 else:
-    logistic = RandomForestClassifier(n_estimators=10)
-    
+    logistic = RandomForestClassifier(n_estimators=100)
+
 logistic.fit(train_X, train_y)
-# print('LogisticRegression score: %f'
-#       % logistic.fit(train_X, train_y).score(test_X, test_y))
+
 
 predicted_probability_distribution_test = logistic.predict_proba(test_X)
 predicted_probability_distribution_train = logistic.predict_proba(train_X)
 
-classes_by_probability = []
-k = -1
-for row in predicted_probability_distribution_test:
-    k += 1
-    classes_by_prob = []
-    for i in xrange(0, len(logistic.classes_)):
-        classes_by_prob.append([row[i], logistic.classes_[i]])
-    classes_by_prob.sort(reverse=True)    
-    for i in xrange(0, len(logistic.classes_)):
-        classes_by_prob[i] = classes_by_prob[i][1]
-    classes_by_probability.append(classes_by_prob)
-
-print metrics.mapk([[y] for y in test_y], classes_by_probability, k=5)
-
 MAP_test = mean_average_precision(predicted_probability_distribution_test, 
-                                   logistic.classes_, 
-                                   test_y)
-print MAP_test
+                                  logistic.classes_, 
+                                  test_y)
+print "MAP on test data: %s" % MAP_test
 MAP_train = mean_average_precision(predicted_probability_distribution_train, 
                                     logistic.classes_, 
                                     train_y) 
-print MAP_train
-# from sklearn import svm
-# clf = svm.SVC()
-# clf.fit (r, b)
-
-# print "hello"
+print "Map on train data: %s" % MAP_train
 
 # # # head -n1500 train.csv > minitest.txt
 
