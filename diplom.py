@@ -1,5 +1,8 @@
 #!/usr/bin/python
-print "hello"
+import ml_metrics as metrics
+import argparse
+from sklearn import linear_model
+from sklearn.ensemble import RandomForestClassifier
 
 def parse(line):
     tokens = line.split(',')
@@ -19,12 +22,17 @@ def mean_average_precision(predicted_probability_distribution,
         classes_by_prob = []
         for i in xrange(0, len(list_of_classes)):
             classes_by_prob.append([row[i], list_of_classes[i]])
-            classes_by_prob.sort(reverse=True)    
-        for j in range (0, 5):
+        classes_by_prob.sort(reverse=True)    
+        for j in range (0, min(5, len(classes_by_prob))):
             if classes_by_prob[j][1] == test_y[k]:
                 total_error += 1.0 / (j + 1)
     
     return total_error / len(predicted_probability_distribution)
+
+parser = argparse.ArgumentParser()
+parser.add_argument("--model", choices=["random_forest", "logistic_regression"], default=["random_forest"], dest="model")
+args = parser.parse_args()
+print "Model used in this run is %s" % args.model
 
 TRAIN_DATASET_SIZE = 30000
 TEST_DATASET_SIZE = 30000
@@ -48,37 +56,23 @@ for line in train:
         test_y.append(label)
     else: 
         break
-#
-# print train_X[0], train_y[0]
-# print test_X[0], test_y[0]
 
-from sklearn import linear_model
-logistic = linear_model.LogisticRegression(C = 1, solver = 'lbfgs', 
-    multi_class = 'multinomial', max_iter = 100)
-print('LogisticRegression score: %f'
-      % logistic.fit(train_X, train_y).score(test_X, test_y))
+if args.model == "logistic_regression":
+    model = linear_model.LogisticRegression(C=1, solver='lbfgs', 
+                                            multi_class='multinomial', max_iter=100)
+else:
+    model = RandomForestClassifier(n_estimators=100)
 
-predicted_probability_distribution_test = logistic.predict_proba(test_X)
-predicted_probability_distribution_train = logistic.predict_proba(train_X)
+model.fit(train_X, train_y)
 
+predicted_probability_distribution_test = model.predict_proba(test_X)
+predicted_probability_distribution_train = model.predict_proba(train_X)
 
 MAP_test = mean_average_precision(predicted_probability_distribution_test, 
-                                  logistic.classes_, 
+                                  model.classes_, 
                                   test_y)
-print MAP_test
+print "MAP on test data: %.3f" % MAP_test
 MAP_train = mean_average_precision(predicted_probability_distribution_train, 
-                                   logistic.classes_, 
+                                   model.classes_, 
                                    train_y) 
-print MAP_train
-# from sklearn import svm
-# clf = svm.SVC()
-# clf.fit (r, b)
-
-# print "hello"
-
-# # head -n1500 train.csv > minitest.txt
-
-
-# #print (tr)
-# print(clf.predict(tr))
-# print (ta)
+print "MAP on train data: %.3f" % MAP_train
