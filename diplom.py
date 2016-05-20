@@ -63,8 +63,8 @@ for line in train:
 
 
 if args.model == "logistic_regression":
-    model = linear_model.LogisticRegression(C = 1, solver = 'lbfgs', 
-                                               multi_class = 'multinomial', max_iter = 100)
+    model = linear_model.LogisticRegression(C=1, solver='lbfgs', 
+                                               multi_class='multinomial', max_iter=100)
 else:
     model = RandomForestClassifier(n_estimators=100)
 
@@ -77,11 +77,11 @@ predicted_probability_distribution_train = model.predict_proba(train_X)
 MAP_test = mean_average_precision(predicted_probability_distribution_test, 
                                   model.classes_, 
                                   test_y)
-print "MAP on test data: %s" % MAP_test
+print "MAP on test data: %.3f" % MAP_test
 MAP_train = mean_average_precision(predicted_probability_distribution_train, 
                                     model.classes_, 
                                     train_y) 
-print "Map on train data: %s" % MAP_train
+print "MAP on train data: %.3f" % MAP_train
 
 # # # head -n1500 train.csv > minitest.txt
 
