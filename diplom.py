@@ -61,8 +61,7 @@ for line in train:
     else: 
         break
 
-i_o_time = time.time() - start_time
-print "Input/Output time: %.3f" % i_o_time
+print "Input/Output time: %.3f" % time.time() - start_time
 train_start_time = time.time()
 
 if args.model == "logistic_regression":
@@ -78,8 +77,7 @@ model.fit(train_X, train_y)
 predicted_probability_distribution_test = model.predict_proba(test_X)
 predicted_probability_distribution_train = model.predict_proba(train_X)
 
-train_predict_time = time.time() - train_start_time
-print "Training + prediction time: %.3f" % training_time
+print "Training + prediction time: %.3f" % time.time() - train_start_time
 
 MAP_test = mean_average_precision(predicted_probability_distribution_test, 
                                   model.classes_, 
@@ -90,6 +88,5 @@ MAP_train = mean_average_precision(predicted_probability_distribution_train,
                                    train_y) 
 print "MAP on train data: %.3f" % MAP_train
 
-elapsed_time = time.time() - start_time
-print "Elapsed time: %.3f" % elapsed_time
+print "Elapsed time: %.3f" % time.time() - start_time
 
