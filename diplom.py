@@ -9,7 +9,6 @@ parser.add_argument("--model", choices=["random_forest", "logistic_regression"],
 args = parser.parse_args()
 print "Model used in this run is %s" % args.model
 
-
 def parse(line):
     tokens = line.split(',')
     features = [tokens[3], tokens[4], tokens[5], tokens[13], tokens[14], tokens[15], tokens[16], 
@@ -57,19 +56,14 @@ for line in train:
         test_y.append(label)
     else: 
         break
-#
-# print train_X[0], train_y[0]
-# print test_X[0], test_y[0]
-
 
 if args.model == "logistic_regression":
     model = linear_model.LogisticRegression(C=1, solver='lbfgs', 
-                                               multi_class='multinomial', max_iter=100)
+                                            multi_class='multinomial', max_iter=100)
 else:
     model = RandomForestClassifier(n_estimators=100)
 
 model.fit(train_X, train_y)
-
 
 predicted_probability_distribution_test = model.predict_proba(test_X)
 predicted_probability_distribution_train = model.predict_proba(train_X)
@@ -79,13 +73,6 @@ MAP_test = mean_average_precision(predicted_probability_distribution_test,
                                   test_y)
 print "MAP on test data: %.3f" % MAP_test
 MAP_train = mean_average_precision(predicted_probability_distribution_train, 
-                                    model.classes_, 
-                                    train_y) 
+                                   model.classes_, 
+                                   train_y) 
 print "MAP on train data: %.3f" % MAP_train
-
-# # # head -n1500 train.csv > minitest.txt
-
-
-# # #print (tr)
-# # print(clf.predict(tr))
-# # print (ta)
