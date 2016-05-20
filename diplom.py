@@ -63,23 +63,23 @@ for line in train:
 
 
 if args.model == "logistic_regression":
-    logistic = linear_model.LogisticRegression(C = 1, solver = 'lbfgs', 
+    model = linear_model.LogisticRegression(C = 1, solver = 'lbfgs', 
                                                multi_class = 'multinomial', max_iter = 100)
 else:
-    logistic = RandomForestClassifier(n_estimators=100)
+    model = RandomForestClassifier(n_estimators=100)
 
-logistic.fit(train_X, train_y)
+model.fit(train_X, train_y)
 
 
-predicted_probability_distribution_test = logistic.predict_proba(test_X)
-predicted_probability_distribution_train = logistic.predict_proba(train_X)
+predicted_probability_distribution_test = model.predict_proba(test_X)
+predicted_probability_distribution_train = model.predict_proba(train_X)
 
 MAP_test = mean_average_precision(predicted_probability_distribution_test, 
-                                  logistic.classes_, 
+                                  model.classes_, 
                                   test_y)
 print "MAP on test data: %s" % MAP_test
 MAP_train = mean_average_precision(predicted_probability_distribution_train, 
-                                    logistic.classes_, 
+                                    model.classes_, 
                                     train_y) 
 print "Map on train data: %s" % MAP_train
 
