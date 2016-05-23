@@ -41,8 +41,8 @@ parser.add_argument("--model", choices=["random_forest", "k_neighbors", "logisti
 args = parser.parse_args()
 print "Model used in this run is %s" % args.model
 
-TRAIN_DATASET_SIZE = 1000000
-TEST_DATASET_SIZE = 1000000
+TRAIN_DATASET_SIZE = 300000
+TEST_DATASET_SIZE = 300000
 
 train = open ('train.csv', 'r')
 train_X = []
