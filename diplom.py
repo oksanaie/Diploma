@@ -38,13 +38,12 @@ start_time = time.time()
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--model", choices=["random_forest", "k_neighbors", "logistic_regression"], default=["random_forest"], dest="model")
-parser.add_argument("--dataset_size", default=100000, type=int, dest="dataset_size")
+parser.add_argument("--train_dataset_size", default=100000, type=int, dest="train_dataset_size")
+parser.add_argument("--test_dataset_size", default=0, type=int, dest="test_dataset_size")
 args = parser.parse_args()
 print "Model used in this run is %s" % args.model
-print "Dataset size is %s" % args.dataset_size
-
-TRAIN_DATASET_SIZE = args.dataset_size
-TEST_DATASET_SIZE = args.dataset_size
+print "Train dataset size is %s" % args.train_dataset_size
+print "Test dataset size is %s" % args.test_dataset_size
 
 train = open ('train.csv', 'r')
 train_X = []
@@ -57,10 +56,10 @@ for line in train:
     if cnt == 0:
         continue
     (features, label) = parse(line)
-    if cnt <= TRAIN_DATASET_SIZE:
+    if cnt <= args.train_dataset_size:
         train_X.append(features)
         train_y.append(label)
-    elif cnt <= TRAIN_DATASET_SIZE + TEST_DATASET_SIZE:
+    elif cnt <= args.train_dataset_size + args.test_dataset_size:
         test_X.append(features)
         test_y.append(label)
     else: 
