@@ -14,7 +14,7 @@ def parse(line):
     label = int (tokens[23])
     return (features, label)
 
-def mean_average_precision(predicted_probability_distribution, 
+def mean_average_precision_new(predicted_probability_distribution, 
                            list_of_classes, 
                            test_y):
     total_error = 0
@@ -32,6 +32,22 @@ def mean_average_precision(predicted_probability_distribution,
                 place += 1
         if place < 6:
             total_error += 1.0 / (place)
+    return total_error / len(predicted_probability_distribution)
+def mean_average_precision(predicted_probability_distribution, 
+                           list_of_classes, 
+                           test_y):
+    total_error = 0
+    k = -1
+    for row in predicted_probability_distribution:
+        k += 1
+        classes_by_prob = []
+        for i in xrange(0, len(list_of_classes)):
+            classes_by_prob.append([row[i], list_of_classes[i]])
+        classes_by_prob.sort(reverse=True)    
+        for j in range (0, min(5, len(classes_by_prob))):
+            if classes_by_prob[j][1] == test_y[k]:
+                total_error += 1.0 / (j + 1)
+    
     return total_error / len(predicted_probability_distribution)
 
 start_time = time.time()
@@ -86,10 +102,18 @@ MAP_test = mean_average_precision(predicted_probability_distribution_test,
                                   model.classes_, 
                                   test_y)
 print "MAP on test data: %.3f" % MAP_test
+MAP_test_new = mean_average_precision_new(predicted_probability_distribution_test, 
+                                  model.classes_, 
+                                  test_y)
+print "MAP new on test data: %.3f" % MAP_test_new
 MAP_train = mean_average_precision(predicted_probability_distribution_train, 
                                    model.classes_, 
                                    train_y) 
 print "MAP on train data: %.3f" % MAP_train
+MAP_train_new = mean_average_precision_new(predicted_probability_distribution_train, 
+                                   model.classes_, 
+                                   train_y) 
+print "MAP on train data: %.3f" % MAP_train_new
 
 print "Elapsed time: %.3f" % (time.time() - start_time)
 
