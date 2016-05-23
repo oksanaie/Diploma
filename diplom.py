@@ -21,14 +21,17 @@ def mean_average_precision(predicted_probability_distribution,
     k = -1
     for row in predicted_probability_distribution:
         k += 1
-        classes_by_prob = []
+        prob_of_class = 0
+        place = 1
         for i in xrange(0, len(list_of_classes)):
-            classes_by_prob.append([row[i], list_of_classes[i]])
-        classes_by_prob.sort(reverse=True)    
-        for j in range (0, min(5, len(classes_by_prob))):
-            if classes_by_prob[j][1] == test_y[k]:
-                total_error += 1.0 / (j + 1)
-    
+            if list_of_classes[i] == test_y[k]:
+                prob_of_class = row[i]
+                break
+        for i in xrange(0, len(list_of_classes)):
+            if row[i] > prob_of_class:
+                place += 1
+        if place < 6:
+            total_error += 1.0 / (place)
     return total_error / len(predicted_probability_distribution)
 
 start_time = time.time()
