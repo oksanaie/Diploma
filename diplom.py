@@ -34,8 +34,6 @@ def mean_average_precision(predicted_probability_distribution,
                 place += 1
         if place < 6:
             total_error += 1.0 / place
-        else:
-             break
     return total_error / len(predicted_probability_distribution)
 
 start_time = time.time()
