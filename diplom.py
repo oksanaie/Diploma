@@ -38,6 +38,7 @@ start_time = time.time()
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--model", choices=["random_forest", "k_neighbors", "logistic_regression"], default=["random_forest"], dest="model")
+parser.add_argument("--dataset_size", default=[100000], dest="dataset_size")
 args = parser.parse_args()
 print "Model used in this run is %s" % args.model
 
