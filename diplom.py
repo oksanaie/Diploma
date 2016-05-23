@@ -32,6 +32,7 @@ def mean_average_precision(predicted_probability_distribution,
             if (row[i] > prob_of_target_class 
                 or (row[i] == prob_of_target_class and list_of_classes[i] > test_y[k])):
                 place += 1
+                if place >= 6: break
         if place < 6:
             total_error += 1.0 / place
     return total_error / len(predicted_probability_distribution)
