@@ -18,14 +18,15 @@ def mean_average_precision(predicted_probability_distribution,
                            list_of_classes, 
                            test_y):
     total_error = 0
-    for k,row in (enumerate (predicted_probability_distribution)):
+    for k, row in enumerate (predicted_probability_distribution):
         prob_of_target_class = 0
         place = 1
-        for i in xrange(0, len(list_of_classes)):
+        assert len(list_of_classes) == len(row)
+        for i in xrange(0, len(row)):
             if list_of_classes[i] == test_y[k]:
                 prob_of_target_class = row[i]
                 break
-        for i in xrange(0, len(list_of_classes)):
+        for i in xrange(0, len(row)):
             if (row[i] > prob_of_target_class 
                 or (row[i] == prob_of_target_class and list_of_classes[i] > test_y[k])):
                 place += 1
@@ -37,11 +38,13 @@ start_time = time.time()
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--model", choices=["random_forest", "k_neighbors", "logistic_regression"], default=["random_forest"], dest="model")
+parser.add_argument("--dataset_size", default=100000, type=int, dest="dataset_size")
 args = parser.parse_args()
 print "Model used in this run is %s" % args.model
+print "Dataset size is %s" % args.dataset_size
 
-TRAIN_DATASET_SIZE = 300000
-TEST_DATASET_SIZE = 300000
+TRAIN_DATASET_SIZE = args.dataset_size
+TEST_DATASET_SIZE = args.dataset_size
 
 train = open ('train.csv', 'r')
 train_X = []
