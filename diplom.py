@@ -18,7 +18,9 @@ def mean_average_precision(predicted_probability_distribution,
                            list_of_classes, 
                            test_y):
     total_error = 0
-    for k, row in enumerate (predicted_probability_distribution):
+    k = -1
+    for row in predicted_probability_distribution:
+        k += 1
         prob_of_target_class = 0
         place = 1
         assert len(list_of_classes) == len(row)
@@ -32,6 +34,8 @@ def mean_average_precision(predicted_probability_distribution,
                 place += 1
         if place < 6:
             total_error += 1.0 / place
+        else:
+             break
     return total_error / len(predicted_probability_distribution)
 
 start_time = time.time()
