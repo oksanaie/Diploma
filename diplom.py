@@ -18,27 +18,25 @@ def mean_average_precision(predicted_probability_distribution,
                            list_of_classes, 
                            test_y):
     total_error = 0
-    k = -1
-    for row in predicted_probability_distribution:
-        k += 1
-        prob_of_class = 0
+    for k,row in (enumerate (predicted_probability_distribution)):
+        prob_of_target_class = 0
         place = 1
         for i in xrange(0, len(list_of_classes)):
             if list_of_classes[i] == test_y[k]:
-                prob_of_class = row[i]
+                prob_of_target_class = row[i]
                 break
         for i in xrange(0, len(list_of_classes)):
-            if row[i] > prob_of_class or (row[i] == prob_of_class and list_of_classes[i] > test_y[k]):
+            if (row[i] > prob_of_target_class 
+                or (row[i] == prob_of_target_class and list_of_classes[i] > test_y[k])):
                 place += 1
         if place < 6:
-            total_error += 1.0 / (place)
+            total_error += 1.0 / place
     return total_error / len(predicted_probability_distribution)
 
 start_time = time.time()
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--model", choices=["random_forest", "k_neighbors", "logistic_regression"], default=["random_forest"], dest="model")
-parser.add_argument("--dataset_size", default=[100000], dest="dataset_size")
 args = parser.parse_args()
 print "Model used in this run is %s" % args.model
 
