@@ -1,10 +1,8 @@
 #!/usr/bin/python
-import time
 import ml_metrics as metrics
 import argparse
 from sklearn import linear_model
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.neighbors import KNeighborsClassifier
 
 def parse(line):
     tokens = line.split(',')
@@ -31,15 +29,13 @@ def mean_average_precision(predicted_probability_distribution,
     
     return total_error / len(predicted_probability_distribution)
 
-start_time = time.time()
-
 parser = argparse.ArgumentParser()
-parser.add_argument("--model", choices=["random_forest", "k_neighbors", "logistic_regression"], default=["random_forest"], dest="model")
+parser.add_argument("--model", choices=["random_forest", "logistic_regression"], default=["random_forest"], dest="model")
 args = parser.parse_args()
 print "Model used in this run is %s" % args.model
 
-TRAIN_DATASET_SIZE = 300000
-TEST_DATASET_SIZE = 300000
+TRAIN_DATASET_SIZE = 30000
+TEST_DATASET_SIZE = 30000
 
 train = open ('train.csv', 'r')
 train_X = []
@@ -61,23 +57,16 @@ for line in train:
     else: 
         break
 
-print "Input/Output time: %.3f" % (time.time() - start_time)
-train_start_time = time.time()
-
 if args.model == "logistic_regression":
     model = linear_model.LogisticRegression(C=1, solver='lbfgs', 
-                                            multi_class='multinomial', max_iter=100, n_jobs=-1)
-elif args.model == "k_neighbors":
-    model = KNeighborsClassifier(n_neighbors=10, n_jobs=-1)
+                                            multi_class='multinomial', max_iter=100)
 else:
-    model = RandomForestClassifier(n_estimators=100, n_jobs=-1)
+    model = RandomForestClassifier(n_estimators=100)
 
 model.fit(train_X, train_y)
 
 predicted_probability_distribution_test = model.predict_proba(test_X)
 predicted_probability_distribution_train = model.predict_proba(train_X)
-
-print "Training + prediction time: %.3f" % (time.time() - train_start_time)
 
 MAP_test = mean_average_precision(predicted_probability_distribution_test, 
                                   model.classes_, 
@@ -87,6 +76,3 @@ MAP_train = mean_average_precision(predicted_probability_distribution_train,
                                    model.classes_, 
                                    train_y) 
 print "MAP on train data: %.3f" % MAP_train
-
-print "Elapsed time: %.3f" % (time.time() - start_time)
-
