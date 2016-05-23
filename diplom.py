@@ -30,6 +30,7 @@ def mean_average_precision_new(predicted_probability_distribution,
         for i in xrange(0, len(list_of_classes)):
             if row[i] > prob_of_class:
                 place += 1
+        print place
         if place < 6:
             total_error += 1.0 / (place)
     return total_error / len(predicted_probability_distribution)
@@ -46,6 +47,7 @@ def mean_average_precision(predicted_probability_distribution,
         classes_by_prob.sort(reverse=True)    
         for j in range (0, min(5, len(classes_by_prob))):
             if classes_by_prob[j][1] == test_y[k]:
+                print j
                 total_error += 1.0 / (j + 1)
     
     return total_error / len(predicted_probability_distribution)
@@ -57,8 +59,8 @@ parser.add_argument("--model", choices=["random_forest", "k_neighbors", "logisti
 args = parser.parse_args()
 print "Model used in this run is %s" % args.model
 
-TRAIN_DATASET_SIZE = 300000
-TEST_DATASET_SIZE = 300000
+TRAIN_DATASET_SIZE = 10
+TEST_DATASET_SIZE = 10
 
 train = open ('train.csv', 'r')
 train_X = []
@@ -113,7 +115,7 @@ print "MAP on train data: %.3f" % MAP_train
 MAP_train_new = mean_average_precision_new(predicted_probability_distribution_train, 
                                    model.classes_, 
                                    train_y) 
-print "MAP on train data: %.3f" % MAP_train_new
+print "MAP on new train data: %.3f" % MAP_train_new
 
 print "Elapsed time: %.3f" % (time.time() - start_time)
 
