@@ -22,7 +22,4 @@ def load_dataset_from_file(filename, examples_count, is_labeled=True):
             data_y.append(label)
         else: 
             break
-    if is_labeled == False:
-        return (data_X, None)
-    else:
-        return (data_X, data_y)
+    return (features, int(tokens[23]) if is_labeled else None)
