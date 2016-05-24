@@ -21,7 +21,7 @@ model_file.close()
 predicted_probability_distribution_test = model.predict_proba(test_X)
 
 result = []
-result.append([id,hotel_cluster])
+result.append([idx, hotel_cluster])
 k = -1
 for row in predicted_probability_distribution:
     k += 1
