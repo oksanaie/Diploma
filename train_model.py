@@ -1,20 +1,12 @@
 #!/usr/bin/python
 import time
-import argparse
 from sklearn import linear_model
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.neighbors import KNeighborsClassifier
 import numpy as np
 from termcolor import colored
 import pickle
-
-def parse(line):
-    tokens = line.split(',')
-    features = [tokens[3], tokens[4], tokens[5], tokens[13], tokens[14], tokens[15], tokens[16], 
-        tokens[17], tokens[20], tokens[21], tokens[22]]
-    features = [float (f) for f in features]
-    label = int (tokens[23])
-    return (features, label)
+import common.py
 
 start_time = time.time()
 
@@ -25,20 +17,7 @@ args = parser.parse_args()
 print "Model used in this run is %s" % colored(args.model, "red")
 print "Train dataset size is %s" % colored(args.train_dataset_size, "red")
 
-train = open ('train.csv', 'r')
-train_X = []
-train_y = []
-cnt = -1
-for line in train: 
-    cnt += 1
-    if cnt == 0:
-        continue
-    (features, label) = parse(line)
-    if cnt <= args.train_dataset_size:
-        train_X.append(features)
-        train_y.append(label)
-    else: 
-        break
+train_X, train_y = load_dataset_from_file('train.csv', args.train_dataset_size, True)
 
 print "Input/Output time: %.3f" % (time.time() - start_time)
 train_start_time = time.time()
