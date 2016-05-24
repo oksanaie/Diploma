@@ -5,6 +5,7 @@ def parse(line, is_labeled=True):
         tokens[17], tokens[20], tokens[21], tokens[22]]
     features = [float (f) for f in features]
     return (features, int(tokens[23]) if is_labeled else None)
+    
 
 def load_dataset_from_file(filename, examples_count, is_labeled=True):
     data = open (filename, 'r')

@@ -7,14 +7,14 @@ import common.py
 import csv
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--model_filename", dest="model_filename")
+parser.add_argument("--model_filename", default=model.pkl, dest="model_filename")
 #parser.add_argument("--test_dataset_size", default=700000, type=int, dest="test_dataset_size")
 args = parser.parse_args()
 print "Test dataset size is %s" % colored(args.test_dataset_size, "red")
 
 test_X, _unused = load_dataset_from_file('test.csv', 700000, False)
 
-model_file = open('args.model_filename.pkl', 'rb')
+model_file = open(args.model_filename, 'rb')
 model = pickle.load(model_file)
 model_file.close()
 
