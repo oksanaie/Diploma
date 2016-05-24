@@ -21,25 +21,32 @@ def mean_average_precision(predicted_probability_distribution,
     k = -1
     for row in predicted_probability_distribution:
         k += 1
-        classes_by_prob = []
-        for i in xrange(0, len(list_of_classes)):
-            classes_by_prob.append([row[i], list_of_classes[i]])
-        classes_by_prob.sort(reverse=True)    
-        for j in range (0, min(5, len(classes_by_prob))):
-            if classes_by_prob[j][1] == test_y[k]:
-                total_error += 1.0 / (j + 1)
-    
+        prob_of_target_class = 0
+        place = 1
+        assert len(list_of_classes) == len(row)
+        for i in xrange(0, len(row)):
+            if list_of_classes[i] == test_y[k]:
+                prob_of_target_class = row[i]
+                break
+        for i in xrange(0, len(row)):
+            if (row[i] > prob_of_target_class 
+                or (row[i] == prob_of_target_class and list_of_classes[i] > test_y[k])):
+                place += 1
+                if place >= 6: break
+        if place < 6:
+            total_error += 1.0 / place
     return total_error / len(predicted_probability_distribution)
 
 start_time = time.time()
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--model", choices=["random_forest", "k_neighbors", "logistic_regression"], default=["random_forest"], dest="model")
+parser.add_argument("--train_dataset_size", default=100000, type=int, dest="train_dataset_size")
+parser.add_argument("--test_dataset_size", default=0, type=int, dest="test_dataset_size")
 args = parser.parse_args()
 print "Model used in this run is %s" % args.model
-
-TRAIN_DATASET_SIZE = 300000
-TEST_DATASET_SIZE = 300000
+print "Train dataset size is %s" % args.train_dataset_size
+print "Test dataset size is %s" % args.test_dataset_size
 
 train = open ('train.csv', 'r')
 train_X = []
@@ -52,10 +59,10 @@ for line in train:
     if cnt == 0:
         continue
     (features, label) = parse(line)
-    if cnt <= TRAIN_DATASET_SIZE:
+    if cnt <= args.train_dataset_size:
         train_X.append(features)
         train_y.append(label)
-    elif cnt <= TRAIN_DATASET_SIZE + TEST_DATASET_SIZE:
+    elif cnt <= args.train_dataset_size + args.test_dataset_size:
         test_X.append(features)
         test_y.append(label)
     else: 
