@@ -28,7 +28,6 @@ print "Train dataset size is %s" % colored(args.train_dataset_size, "red")
 train = open ('train.csv', 'r')
 train_X = []
 train_y = []
-
 cnt = -1
 for line in train: 
     cnt += 1
@@ -52,8 +51,8 @@ elif args.model == "k_neighbors":
 else:
     model = RandomForestClassifier(n_estimators=10, max_depth=20, n_jobs=-1)
 
-model_file = open('model.pkl', 'wb')
 my_model = model.fit(train_X, train_y)
+model_file = open('model.pkl', 'wb')
 pickle.dump(my_model, model_file)
-
+model_file.close()
 print "Elapsed time: %.3f" % (time.time() - start_time)
