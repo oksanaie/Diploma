@@ -6,7 +6,7 @@ from sklearn.neighbors import KNeighborsClassifier
 import numpy as np
 from termcolor import colored
 import pickle
-import common.py
+import common
 
 start_time = time.time()
 

@@ -3,7 +3,7 @@ import time
 import numpy as np
 from termcolor import colored
 import pickle
-import common.py
+import common
 import csv
 
 parser = argparse.ArgumentParser()
@@ -21,7 +21,7 @@ model_file.close()
 predicted_probability_distribution_test = model.predict_proba(test_X)
 
 result = []
-result.append([idx, hotel_cluster])
+result.append(["id", "hotel_cluster"])
 k = -1
 for row in predicted_probability_distribution:
     k += 1
@@ -31,10 +31,10 @@ for row in predicted_probability_distribution:
     for i in xrange(0, len(row)):
         classes_by_prob.append([row[i], model.classes_[i]])
         classes_by_prob.sort(reverse=True)
-    clusters =[]  
-    #clusters = [classes_by_prob[x][1] for x in xrange(0, 5)]  
-    for x in xrange(0, 5):
-        clusters.append(classes_by_prob[x][1])
+    clusters = [classes_by_prob[x][1] for x in xrange(0, 5)]  
+    #clusters =[] 
+    # for x in xrange(0, 5):
+    #     clusters.append(classes_by_prob[x][1])
     line.append(clusters)
     result.append(line)
 
