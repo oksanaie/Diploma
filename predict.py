@@ -8,7 +8,7 @@ import csv
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--model_filename", dest="model_filename")
-parser.add_argument("--test_dataset_size", default=100000, type=int, dest="test_dataset_size")
+#parser.add_argument("--test_dataset_size", default=700000, type=int, dest="test_dataset_size")
 args = parser.parse_args()
 print "Test dataset size is %s" % colored(args.test_dataset_size, "red")
 
