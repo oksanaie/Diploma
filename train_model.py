@@ -11,6 +11,7 @@ import common.py
 start_time = time.time()
 
 parser = argparse.ArgumentParser()
+parser.add_argument("--model_filename", dest="model_filename")
 parser.add_argument("--model", choices=["random_forest", "k_neighbors", "logistic_regression"], default=["random_forest"], dest="model")
 parser.add_argument("--train_dataset_size", default=100000, type=int, dest="train_dataset_size")
 args = parser.parse_args()
@@ -31,7 +32,7 @@ else:
     model = RandomForestClassifier(n_estimators=10, max_depth=20, n_jobs=-1)
 
 my_model = model.fit(train_X, train_y)
-model_file = open('model.pkl', 'wb')
+model_file = open('args.model_filename.pkl', 'wb')
 pickle.dump(my_model, model_file)
 model_file.close()
 print "Elapsed time: %.3f" % (time.time() - start_time)
