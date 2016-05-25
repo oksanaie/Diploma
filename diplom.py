@@ -133,9 +133,9 @@ MAP_train = mean_average_precision(predicted_probability_distribution_train,
                                    train_y) 
 print "MAP on train data: %.3f" % MAP_train
 
-# plot_learning_curve(model, args.model, train_X, train_y, ylim=None, 
-#     cv=ShuffleSplit(len(train_X), n_iter=1, test_size=.25, random_state=0),
-#                     train_sizes=np.linspace(.1, 1.0, 5))
-# plt.show()
+plot_learning_curve(model, args.model, train_X, train_y, ylim=None, 
+    cv=ShuffleSplit(len(train_X), n_iter=1, test_size=.25, random_state=0),
+                    train_sizes=np.linspace(.1, 1.0, 5))
+plt.show()
 
 print "Elapsed time: %.3f" % (time.time() - start_time)
