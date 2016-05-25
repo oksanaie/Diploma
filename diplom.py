@@ -11,6 +11,7 @@ from sklearn import cross_validation
 import numpy as np
 from termcolor import colored
 from sklearn.cross_validation import ShuffleSplit
+import pickle
 
 def parse(line):
     tokens = line.split(',')
@@ -114,7 +115,9 @@ elif args.model == "k_neighbors":
 else:
     model = RandomForestClassifier(n_estimators=10, max_depth=20, n_jobs=-1)
 
-model.fit(train_X, train_y)
+model_file = open('model.pkl', 'wb')
+my_model = model.fit(train_X, train_y)
+pickle.dump(my_model, model_file)
 
 predicted_probability_distribution_test = model.predict_proba(test_X)
 predicted_probability_distribution_train = model.predict_proba(train_X)
@@ -130,9 +133,9 @@ MAP_train = mean_average_precision(predicted_probability_distribution_train,
                                    train_y) 
 print "MAP on train data: %.3f" % MAP_train
 
-# plot_learning_curve(model, args.model, train_X, train_y, ylim=None, 
-#     cv=ShuffleSplit(len(train_X), n_iter=1, test_size=.25, random_state=0),
-#                     train_sizes=np.linspace(.1, 1.0, 5))
-# plt.show()
+plot_learning_curve(model, args.model, train_X, train_y, ylim=None, 
+    cv=ShuffleSplit(len(train_X), n_iter=1, test_size=.25, random_state=0),
+                    train_sizes=np.linspace(.1, 1.0, 5))
+plt.show()
 
 print "Elapsed time: %.3f" % (time.time() - start_time)
