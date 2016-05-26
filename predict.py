@@ -13,9 +13,11 @@ parser.add_argument("--model_filename", dest="model_filename")
 args = parser.parse_args()
 
 test_X, _unused = load_dataset_from_file('test.csv', 7000000, False)
-model_file = open(args.model_filename, 'rb')
-model = pickle.load(model_file)
-model_file.close()
+
+model = None
+with open(args.model_filename, 'rb') as model_file:
+    model = pickle.load(model_file)
+    model_file.close()
 
 predicted_probability_distribution_test = model.predict_proba(test_X)
 
@@ -31,6 +33,8 @@ for row in predicted_probability_distribution_test:
         classes_by_prob.append([row[i], model.classes_[i]])
     classes_by_prob.sort(reverse=True) 
     line.append(" ".join([str(classes_by_prob[x][1]) for x in xrange(0, 5)]))
+    if len(result) % 100000 == 0:
+        print "Processed %d rows, predicted %d examples." % (k, len(result))
     result.append(line)
 
 with open("result.csv", "wb") as f:
