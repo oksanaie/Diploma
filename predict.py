@@ -34,6 +34,7 @@ for row in predicted_probability_distribution_test:
     classes_by_prob.sort(reverse=True) 
     line.append(" ".join([str(classes_by_prob[x][1]) for x in xrange(0, 5)]))
     if len(result) % 100000 == 0:
+        print classes_by_prob
         print "Processed %d rows, predicted %d examples." % (k, len(result))
     result.append(line)
 

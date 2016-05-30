@@ -1,3 +1,9 @@
+import datetime
+
+def date(dt_str):
+    ans = datetime.date(*[int(i) for i in dt_str.split("-")])
+    return ans
+
 def parse(line, is_labeled=True):
     tokens = line.split(',')
     if is_labeled and int(tokens[18]) == 0:
@@ -6,7 +12,21 @@ def parse(line, is_labeled=True):
         tokens = tokens[:18] + tokens[20:]
     if not is_labeled:
         tokens = tokens[1:]
-    features = tokens[1:11] + tokens[13:21]
+
+    check_in = date(tokens[11])
+    check_out = date(tokens[12])
+    len_of_stay = int(check_out.strftime('%j')) - int(check_in.strftime('%j'))
+    if len_of_stay < 0:
+       len_of_stay += 365
+    weekends = 0
+    if (check_in.weekday() == 4 or check_in.weekday() == 5) and (len_of_stay < 4):
+        weekends = 1
+    extra_features = [len_of_stay, weekends,
+                  int(check_in.strftime('%j')), int(check_out.strftime('%j')), 
+                  int(check_in.month), int(check_out.month),
+                  int(check_in.strftime('%W')), int(check_out.strftime('%W'))]
+
+    features = tokens[1:11] + tokens[13:21] + extra_features
     features = [
         float (f) if f != '' else 0.0 
         for f in features]

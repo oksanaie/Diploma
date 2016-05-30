@@ -55,7 +55,11 @@ start_time = time.time()
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--model_filename", dest="model_filename")
-parser.add_argument("--model", choices=["random_forest", "k_neighbors", "logistic_regression"], default=["random_forest"], dest="model")
+parser.add_argument(
+    "--model", 
+    choices=["random_forest", "k_neighbors", "logistic_regression"], 
+    default=["random_forest"], 
+    dest="model")
 parser.add_argument("--train_dataset_size", default=100000, type=int, dest="train_dataset_size")
 parser.add_argument("--plot_learning_curve", default=False, type=bool, dest="plot_learning_curve")
 parser.add_argument("--curve_points", default=5, type=int, dest="curve_points")
@@ -77,12 +81,11 @@ if args.model == "logistic_regression":
 elif args.model == "k_neighbors":
     model = KNeighborsClassifier(n_neighbors=10, n_jobs=-1)
 else:
-    model = RandomForestClassifier(n_estimators=10, max_depth=20, n_jobs=-1)
+    model = RandomForestClassifier(n_estimators=50, max_depth=15, n_jobs=-1)
 
 if args.plot_learning_curve:
     print "Plotting learning curve."
-    plt, test_map_avg, test_map_std = plot_learning_curve(
-        model, args.model, train_X, train_y, args.curve_points)
+    plt, test_map_avg, test_map_std = plot_learning_curve(model, args.model, train_X, train_y, args.curve_points)
     print "Mean Average Precision on test: %.3f, 95%% confidence [%.3f, %.3f]" % (
         test_map_avg, 
         test_map_avg - 2. * test_map_std, 
@@ -91,6 +94,9 @@ if args.plot_learning_curve:
 else:
     print "Training model."
     model.fit(train_X, train_y)
+    print "Feature importances: "
+    for x in xrange (0, len(model.feature_importances_)):
+        print x, model.feature_importances_[x]
     print "Saving model to %s." % args.model_filename
     with open(args.model_filename, 'wb') as model_file:
         pickle.dump(model, model_file)
