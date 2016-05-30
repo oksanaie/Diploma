@@ -25,7 +25,7 @@ result = []
 result.append(["id", "hotel_cluster"])
 k = -1
 for row in predicted_probability_distribution_test:
-    k += 1`
+    k += 1
     line = []
     line.append(k)
     classes_by_prob = []
