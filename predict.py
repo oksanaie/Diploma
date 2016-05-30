@@ -25,7 +25,7 @@ result = []
 result.append(["id", "hotel_cluster"])
 k = -1
 for row in predicted_probability_distribution_test:
-    k += 1
+    k += 1`
     line = []
     line.append(k)
     classes_by_prob = []
@@ -34,6 +34,7 @@ for row in predicted_probability_distribution_test:
     classes_by_prob.sort(reverse=True) 
     line.append(" ".join([str(classes_by_prob[x][1]) for x in xrange(0, 5)]))
     if len(result) % 100000 == 0:
+        print classes_by_prob
         print "Processed %d rows, predicted %d examples." % (k, len(result))
     result.append(line)
 
