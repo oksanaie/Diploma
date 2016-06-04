@@ -84,5 +84,3 @@ print "Classified %d out of %d (%.1f %%)" % (classified, total, classified * 100
 
 # print list(train_data)[0:4]
 # print list(test_data)[0:4]
-#http://kinovo.me/2874-igra-prestolov-6-sezon.html
-#anastasia1993
