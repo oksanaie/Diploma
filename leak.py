@@ -41,7 +41,15 @@ def read_file(file_name,
 
 def write_file(input_file_name,
 			   output_file_name, 
-	           lookup):
+	           lookup,
+	           model_results_file_name=None):
+	model_lookup = None
+	if model_results_file_name is not None:
+		model_lookup = {}
+		with open(model_results_file_name, "r") as model_results_file:
+			for line in model_results_file.readlines()[1:]:
+				[idx, hotel_cluster] = line.split(",")
+				model_lookup[int(idx)] = hotel_cluster
 	classified = 0
 	with open(input_file_name, "r") as in_file: 
 		with open(output_file_name, "w") as out_file:
@@ -56,7 +64,10 @@ def write_file(input_file_name,
 					classified += 1
 					target_class = " ".join(target_classes)
 				else:
-					target_class = "1"
+					if model_lookup is not None:
+						target_class = model_lookup[cnt]
+					else:
+						target_class = "1"
 				out_file.write("%d,%s\n" % (cnt, target_class))
 				cnt += 1
 
@@ -79,7 +90,11 @@ print "Train uniqueness %.2f" % (100 * test_uniqueness)
 print "Train coverage %.2f" % (100 * test_coverage) 
 
 
-classified, total = write_file('test.csv', 'predictions.csv', train_data)
+classified, total = write_file(
+	input_file_name='test.csv', 
+	model_results_file_name='result.csv', 
+	output_file_name='final_predictions.csv', 
+	lookup=train_data)
 print "Classified %d out of %d (%.1f %%)" % (classified, total, classified * 100.0 / total)
 
 # print list(train_data)[0:4]

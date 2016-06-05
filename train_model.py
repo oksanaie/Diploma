@@ -9,7 +9,6 @@ import matplotlib.pyplot as plt
 from termcolor import colored
 import pickle
 from common import load_dataset_from_file
-from common import parse
 import numpy as np
 import argparse
 
@@ -54,7 +53,7 @@ def plot_learning_curve(estimator, title, X, y, curve_points=5):
 start_time = time.time()
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--model_filename", dest="model_filename")
+parser.add_argument("--model_filename", dest="model_filename", default="model")
 parser.add_argument(
     "--model", 
     choices=["random_forest", "k_neighbors", "logistic_regression"], 
@@ -81,7 +80,7 @@ if args.model == "logistic_regression":
 elif args.model == "k_neighbors":
     model = KNeighborsClassifier(n_neighbors=10, n_jobs=-1)
 else:
-    model = RandomForestClassifier(n_estimators=50, max_depth=15, n_jobs=-1)
+    model = RandomForestClassifier(n_estimators=20, max_depth=15, n_jobs=-1)
 
 if args.plot_learning_curve:
     print "Plotting learning curve."
