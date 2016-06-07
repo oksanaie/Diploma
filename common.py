@@ -78,8 +78,11 @@ def get_features(line, is_labeled=True):
 
 def load_dataset_from_file(filename, examples_count, is_labeled=True):
     data = open (filename, 'r').readlines()
+    # Next two lines verifies that the parsing result of header is what
+    # we expect.
     header, _unused = parse_line(data[0], is_labeled, is_header=True)
     assert header == EXPECTED_HEADER
+    
     data_X = []
     data_y = []
     cnt = 0
@@ -100,7 +103,8 @@ def load_dataset_from_file(filename, examples_count, is_labeled=True):
 
 class FastRandomForest(RandomForestClassifier):
     """This black magic is needed since sklearn random forest 
-       has memory issues at prediction time."""
+       has memory issues at prediction time. It is a simple
+       bufferization over predict_proba() to avoid memory overuse."""
 
     BLOCK_SIZE = 10000
 

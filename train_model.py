@@ -1,4 +1,7 @@
 #!/usr/bin/python
+# To prepare a file for submission one needs to run this script first.
+# Then ./predict.py and ./leak.py. Resulting file 'final_predictions.csv'
+# is good for the submission.
 import argparse
 import numpy as np
 import time
@@ -104,4 +107,3 @@ else:
         pickle.dump(model, model_file)
 
 print "Elapsed time: %.3f" % (time.time() - start_time)
-

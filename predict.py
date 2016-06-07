@@ -19,7 +19,7 @@ with open(args.model_filename, 'rb') as model_file:
     model.set_params(n_jobs=1)
     model_file.close()
 
-test_X, _unused = load_dataset_from_file('test.csv', 300001, False)    
+test_X, _unused = load_dataset_from_file('test.csv', 30000001, False)    
 
 print "Trying to predict probability distributions."
 predicted_probability_distribution_test = model.predict_proba(test_X)
