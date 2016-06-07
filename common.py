@@ -11,26 +11,6 @@ def date(dt_str):
         print "Non-fatal error: %s" % e
         return datetime.datetime.strptime("2015-01-01", "%Y-%m-%d")  
 
-RAW_FEATURES = [
-    SITE_NAME, 
-    POSA_CONTINENT, 
-    USER_LOCATION_COUNTRY, 
-    USER_LOCATION_REGION,
-    USER_LOCATION_CITY,
-    ORIG_DESTINATION_DISTANCE,
-    USER_ID,
-    IS_MOBILE,
-    IS_PACKAGE,
-    CHANNEL,
-    SRCH_ADULTS_CNT,
-    SRCH_CHILDREN_CNT,
-    SRCH_RM_CNT,
-    SRCH_DESTINATION_ID,
-    SRCH_DESTINATION_TYPE_ID,
-    HOTEL_CONTINENT,
-    HOTEL_COUNTRY,
-    HOTEL_MARKET]
-
 def parse_line(line, is_labeled, is_header=False):
     if line[-1] == '\n':
         line = line[:-1]
@@ -55,6 +35,10 @@ def get_features(line, is_labeled=True):
     (tokens, label) = parse_line(line, is_labeled)
     if tokens is None:
         return None
+    # One should use in this function only constants defined in features.py
+    # like SRCH_CI, SRCH_CO, USER_LOCATION_COUNTRY, ... Please avoid 
+    # referencing tokens directly as this is harmful for readability and
+    # is error-prone.
     check_in = date(tokens[SRCH_CI])
     check_out = date(tokens[SRCH_CO])
     len_of_stay = int(check_out.strftime('%j')) - int(check_in.strftime('%j'))
@@ -67,7 +51,26 @@ def get_features(line, is_labeled=True):
                   int(check_in.strftime('%j')), int(check_out.strftime('%j')), 
                   int(check_in.month), int(check_out.month),
                   int(check_in.strftime('%W')), int(check_out.strftime('%W'))]
-
+    # These are features that we will use as is:
+    RAW_FEATURES = [
+        SITE_NAME, 
+        POSA_CONTINENT, 
+        USER_LOCATION_COUNTRY, 
+        USER_LOCATION_REGION,
+        USER_LOCATION_CITY,
+        ORIG_DESTINATION_DISTANCE,
+        USER_ID,
+        IS_MOBILE,
+        IS_PACKAGE,
+        CHANNEL,
+        SRCH_ADULTS_CNT,
+        SRCH_CHILDREN_CNT,
+        SRCH_RM_CNT,
+        SRCH_DESTINATION_ID,
+        SRCH_DESTINATION_TYPE_ID,
+        HOTEL_CONTINENT,
+        HOTEL_COUNTRY,
+        HOTEL_MARKET]
     features = [
         tokens[raw_feature_id]
         for raw_feature_id in RAW_FEATURES] + extra_features
