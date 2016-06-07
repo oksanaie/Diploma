@@ -1,16 +1,19 @@
 #!/usr/bin/python
+import argparse
+import numpy as np
 import time
-from sklearn.linear_model import LogisticRegression
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.neighbors import KNeighborsClassifier
+import matplotlib.pyplot as plt
+import pickle
+
+from termcolor import colored
+
 from sklearn.cross_validation import ShuffleSplit
 from sklearn.learning_curve import learning_curve
-import matplotlib.pyplot as plt
-from termcolor import colored
-import pickle
+from sklearn.linear_model import LogisticRegression
+from sklearn.neighbors import KNeighborsClassifier
+
 from common import load_dataset_from_file
-import numpy as np
-import argparse
+from common import FastRandomForest
 
 def plot_learning_curve(estimator, title, X, y, curve_points=5):
     plt.figure()
@@ -80,7 +83,7 @@ if args.model == "logistic_regression":
 elif args.model == "k_neighbors":
     model = KNeighborsClassifier(n_neighbors=10, n_jobs=-1)
 else:
-    model = RandomForestClassifier(n_estimators=20, max_depth=15, n_jobs=4)
+    model = FastRandomForest(n_estimators=20, max_depth=15, n_jobs=4)
 
 if args.plot_learning_curve:
     print "Plotting learning curve."
