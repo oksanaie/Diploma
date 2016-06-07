@@ -99,7 +99,8 @@ def load_dataset_from_file(filename, examples_count, is_labeled=True):
     return (np.array(data_X), np.array(data_y) if is_labeled else None)
 
 class FastRandomForest(RandomForestClassifier):
-    """This black magic is needed since sklearn random forest has memory issues at prediction time."""
+    """This black magic is needed since sklearn random forest 
+       has memory issues at prediction time."""
 
     BLOCK_SIZE = 10000
 
@@ -108,6 +109,7 @@ class FastRandomForest(RandomForestClassifier):
 
     def predict_proba(self, X):
         print "invoking fast predict_proba"
-        ys = [self._predict_proba(X[i:i+self.BLOCK_SIZE])
+        ys = [
+            self._predict_proba(X[i:i+self.BLOCK_SIZE])
             for i in xrange(0, len(X), self.BLOCK_SIZE)]
-        return np.concatenate(ys, axis=0)
+        return np.concatenate(ys)

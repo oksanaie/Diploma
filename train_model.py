@@ -83,7 +83,7 @@ if args.model == "logistic_regression":
 elif args.model == "k_neighbors":
     model = KNeighborsClassifier(n_neighbors=10, n_jobs=-1)
 else:
-    model = FastRandomForest(n_estimators=20, max_depth=15, n_jobs=4)
+    model = FastRandomForest(n_estimators=20, max_depth=15, n_jobs=-1)
 
 if args.plot_learning_curve:
     print "Plotting learning curve."
