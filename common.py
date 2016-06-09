@@ -4,6 +4,20 @@ import numpy as np
 from features import *
 from sklearn.ensemble import RandomForestClassifier
 
+def load_destinations():
+    result = {}
+    data = open ('destinations.csv', 'r').readlines()
+    for line in data[1:]:
+        tokens = line.split(',')
+        result[int(tokens[0])] = tokens[1:]
+    return result
+
+DESTINATIONS = load_destinations()
+
+def get_destination_features(srch_destination_id, feature_num=149):
+    default_destination = [0.0 for i in xrange(0, feature_num)]
+    return DESTINATIONS.get(srch_destination_id, default_destination)[0:feature_num]
+
 def date(dt_str):
     try:
         return datetime.datetime.strptime(dt_str, "%Y-%m-%d")  
@@ -51,6 +65,7 @@ def get_features(line, is_labeled=True):
                   int(check_in.strftime('%j')), int(check_out.strftime('%j')), 
                   int(check_in.month), int(check_out.month),
                   int(check_in.strftime('%W')), int(check_out.strftime('%W'))]
+    extra_features += get_destination_features(int(tokens[SRCH_DESTINATION_ID]))
     # These are features that we will use as is:
     RAW_FEATURES = [
         SITE_NAME, 
@@ -85,7 +100,6 @@ def load_dataset_from_file(filename, examples_count, is_labeled=True):
     # we expect.
     header, _unused = parse_line(data[0], is_labeled, is_header=True)
     assert header == EXPECTED_HEADER
-    
     data_X = []
     data_y = []
     cnt = 0

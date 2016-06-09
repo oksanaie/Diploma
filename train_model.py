@@ -27,8 +27,8 @@ def plot_learning_curve(estimator, title, X, y, curve_points=5):
         estimator,
         X,
         y,
-        train_sizes=np.linspace(.1, 1.0, curve_points),
-#        train_sizes=np.logspace(0.0, 4.0, curve_points, base=1.0/3.0),
+#        train_sizes=np.linspace(.1, 1.0, curve_points),
+        train_sizes=np.logspace(0.0, 4.0, curve_points, base=1.0/3.0),
         n_jobs=-1)
     train_scores_mean = np.mean(train_scores, axis=1)
     train_scores_std = np.std(train_scores, axis=1)
@@ -86,7 +86,7 @@ if args.model == "logistic_regression":
 elif args.model == "k_neighbors":
     model = KNeighborsClassifier(n_neighbors=10, n_jobs=-1)
 else:
-    model = FastRandomForest(n_estimators=50, max_depth=15, n_jobs=-1)
+    model = FastRandomForest(n_estimators=30, max_depth=20, n_jobs=-1)
 
 if args.plot_learning_curve:
     print "Plotting learning curve."
