@@ -27,15 +27,15 @@ parser.add_argument("--train_dataset_size", default=100000, type=int, dest="trai
 args = parser.parse_args()
 train_X, train_y = load_dataset_from_file('train.csv', args.train_dataset_size, True)
 
-max_depth = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
-param_grid = dict(max_depth=max_depth)
+n_estimators = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
+param_grid = dict(n_estimators=n_estimators)
 
 grid = GridSearchCV(estimator=FastRandomForest(n_jobs=-1), param_grid=param_grid)
 grid.fit(train_X, train_y)
 
 scores = [x[1] for x in grid.grid_scores_]
-scores = np.array(scores).reshape(len(max_depth))
+scores = np.array(scores).reshape(len(n_estimators))
 
-plt.title('max_depth')
-plt.plot(max_depth, scores)
+plt.title('n_estimators')
+plt.plot(n_estimators, scores)
 plt.show()
