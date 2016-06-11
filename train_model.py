@@ -90,7 +90,8 @@ else:
 
 if args.plot_learning_curve:
     print "Plotting learning curve."
-    plt, test_map_avg, test_map_std = plot_learning_curve(model, args.model, train_X, train_y, args.curve_points)
+    plt, test_map_avg, test_map_std = plot_learning_curve(
+        model, args.model, train_X, train_y, args.curve_points)
     print "Mean Average Precision on test: %.3f, 95%% confidence [%.3f, %.3f]" % (
         test_map_avg, 
         test_map_avg - 2. * test_map_std, 
@@ -99,9 +100,10 @@ if args.plot_learning_curve:
 else:
     print "Training model."
     model.fit(train_X, train_y)
-    # print "Feature importances: "
-    # for x in xrange (0, len(model.feature_importances_)):
-    #     print x, model.feature_importances_[x]
+    if args.model == "random_forest":
+        print "Feature importances: "
+        for x in xrange (0, len(model.feature_importances_)):
+            print x, model.feature_importances_[x]
     print "Saving model to %s." % args.model_filename
     with open(args.model_filename, 'wb') as model_file:
         pickle.dump(model, model_file)

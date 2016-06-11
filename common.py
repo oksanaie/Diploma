@@ -3,18 +3,29 @@ import numpy as np
 
 from features import *
 from sklearn.ensemble import RandomForestClassifier
+from sklearn import decomposition
+
+N_COMPONENTS = 10 # MAX 149
 
 def load_destinations():
     result = {}
     data = open ('destinations.csv', 'r').readlines()
     for line in data[1:]:
         tokens = line.split(',')
-        result[int(tokens[0])] = tokens[1:]
+        result[int(tokens[0])] = [float(x) for x in tokens[1:]]
+
+    X = np.array([result[x] for x in result.keys()])
+    pca = decomposition.PCA(n_components=N_COMPONENTS)
+    pca.fit(X)
+    X = pca.transform(X)
+    for i, x in enumerate(result.keys()):
+        result[x] = X[i].tolist()
+        assert len(result[x]) == N_COMPONENTS
     return result
 
 DESTINATIONS = load_destinations()
 
-def get_destination_features(srch_destination_id, feature_num=149):
+def get_destination_features(srch_destination_id, feature_num=N_COMPONENTS):
     default_destination = [0.0 for i in xrange(0, feature_num)]
     return DESTINATIONS.get(srch_destination_id, default_destination)[0:feature_num]
 
