@@ -3,6 +3,7 @@ import numpy as np
 
 from features import *
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.neighbors import KNeighborsClassifier
 from sklearn import decomposition
 
 N_COMPONENTS = 10 # MAX 149
@@ -177,21 +178,6 @@ class FastRandomForest(RandomForestClassifier):
             predicted_probability_distribution, self.classes_, y)
 
 class CustomKNN(KNeighborsClassifier):
-    """This black magic is needed since sklearn random forest 
-       has memory issues at prediction time. It is a simple
-       bufferization over predict_proba() to avoid memory overuse."""
-
-    BLOCK_SIZE = 10000
-
-    def _predict_proba(self, X):
-        return super(KNeighborsClassifier, self).predict_proba(X)
-
-    def predict_proba(self, X):
-        print "invoking fast predict_proba"
-        ys = [
-            self._predict_proba(X[i:i+self.BLOCK_SIZE])
-            for i in xrange(0, len(X), self.BLOCK_SIZE)]
-        return np.concatenate(ys)
 
     def score(self, X, y):
         print "invoking custom score"

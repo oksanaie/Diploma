@@ -1,12 +1,10 @@
 #!/usr/bin/python
-# To prepare a file for submission one needs to run this script first.
-# Then ./predict.py and ./leak.py. Resulting file 'final_predictions.csv'
-# is good for the submission.
 import argparse
 import numpy as np
 import time
 import matplotlib.pyplot as plt
 import pickle
+import os
 
 from termcolor import colored
 
@@ -19,6 +17,7 @@ from sklearn.grid_search import GridSearchCV
 
 from common import load_dataset_from_file
 from common import FastRandomForest
+from common import CustomKNN
 
 start_time = time.time()
 
@@ -28,28 +27,17 @@ args = parser.parse_args()
 
 allX, ally = load_dataset_from_file('train.csv', args.train_dataset_size, True)
 
-# X_train, X_test, y_train, y_test = cross_validation.train_test_split(
-# 	allX, ally, test_size=0.3, random_state=0)
-
-# # n_estimator = 10, depth = 20
-# model = FastRandomForest(n_jobs=-1)
-# model.fit(X_train, y_train)
-
-# print model.score(X_test, y_test)
+DIR = "illustrations"
 
 def plot_n_estimators(train_X, train_y):
-	n_estimators = [5, 10, 15, 20, 25, 30, 50, 75, 100, 150, 200]
-	param_grid = dict(n_estimators=n_estimators)
-
-	grid = GridSearchCV(estimator=FastRandomForest(n_jobs=-1), param_grid=param_grid)
+	param = [5, 10, 15, 20, 25, 30, 50, 75, 100, 150, 200]
+	grid = GridSearchCV(
+		estimator=FastRandomForest(n_jobs=-1), 
+		param_grid=dict(n_estimators=param))
 	grid.fit(train_X, train_y)
-
 	scores = [x[1] for x in grid.grid_scores_]
-	scores = np.array(scores).reshape(len(n_estimators))
-
-	plt.title('n_estimators')
-	plt.plot(n_estimators, scores)
-	plt.show()
+	scores = np.array(scores).reshape(len(param))
+	plt.plot(param, scores)
 
 def plot_max_depth(train_X, train_y):
 	param = [5, 10, 15, 20, 25, 30, 50, 75, 100, 150, 200]
@@ -57,13 +45,9 @@ def plot_max_depth(train_X, train_y):
 		estimator=FastRandomForest(n_jobs=-1), 
 		param_grid=dict(max_depth=param))
 	grid.fit(train_X, train_y)
-
 	scores = [x[1] for x in grid.grid_scores_]
 	scores = np.array(scores).reshape(len(param))
-
-	plt.title('max_depth')
 	plt.plot(param, scores)
-	plt.show()
 
 def plot_max_features(train_X, train_y):
 	param = range(1, 30, 2)
@@ -71,31 +55,32 @@ def plot_max_features(train_X, train_y):
 		estimator=FastRandomForest(n_jobs=-1), 
 		param_grid=dict(max_features=param))
 	grid.fit(train_X, train_y)
-
 	scores = [x[1] for x in grid.grid_scores_]
 	scores = np.array(scores).reshape(len(param))
-
-	plt.title('max_features')
 	plt.plot(param, scores)
-	plt.show()
 
 def plot_n_neighbours(train_X, train_y, weights):
-	param = [1, 5, 10, 20, 50, 75, 100]
+	param = [50, 100, 150, 200, 250, 300, 350, 400, 450, 500, 550, 600]
 	grid = GridSearchCV(
 		estimator=CustomKNN(n_jobs=-1, weights=weights), 
 		param_grid=dict(n_neighbors=param))
 	grid.fit(train_X, train_y)
-
 	scores = [x[1] for x in grid.grid_scores_]
-	scores = np.array(scores).reshape(len(param))
+	np.array(scores).reshape(len(param))
+	line, = plt.plot(param, scores, label=weights)
+	plt.legend(loc=1)
 
-	plt.title('n_neighbors (%s)' % weights)
-	plt.plot(param, scores)
-	plt.show()
-
+def save_and_clear(title):
+	plt.title(title)
+	plt.savefig(os.path.join(DIR, title + '.png'))
+	plt.close()
 
 #plot_n_estimators(allX, ally)
+#save_and_clear('n_estimators')
 #plot_max_depth(allX, ally)
+#save_and_clear('max_depth')
 #plot_max_features(allX, ally)
+#save_and_clear('max_features')
 plot_n_neighbours(allX, ally, 'uniform')
 plot_n_neighbours(allX, ally, 'distance')
+save_and_clear('n_neighbors')

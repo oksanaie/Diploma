@@ -13,7 +13,6 @@ from termcolor import colored
 from sklearn.cross_validation import ShuffleSplit
 from sklearn.learning_curve import learning_curve
 from sklearn.linear_model import LogisticRegression
-from sklearn.neighbors import KNeighborsClassifier
 
 from common import load_dataset_from_file
 from common import FastRandomForest
