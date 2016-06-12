@@ -82,11 +82,12 @@ if args.model == "logistic_regression":
     model = LogisticRegression(C=0.1, 
                                solver='lbfgs', 
                                multi_class='multinomial', 
-                               max_iter=100)
+                               max_iter=10,
+                               n_jobs=-1)
 elif args.model == "k_neighbors":
     model = KNeighborsClassifier(n_neighbors=10, n_jobs=-1)
 else:
-    model = FastRandomForest(n_estimators=30, max_depth=20, n_jobs=-1)
+    model = FastRandomForest(n_estimators=100, max_depth=15, max_features=10, n_jobs=-1)
 
 if args.plot_learning_curve:
     print "Plotting learning curve."
