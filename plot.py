@@ -23,7 +23,7 @@ from common import FastLogisticRegression
 start_time = time.time()
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--train_dataset_size", default=10000, type=int, dest="train_dataset_size")
+parser.add_argument("--train_dataset_size", default=100000, type=int, dest="train_dataset_size")
 args = parser.parse_args()
 
 allX, catX, ally = load_dataset_from_file('train.csv', args.train_dataset_size, True)
