@@ -27,7 +27,7 @@ parser.add_argument("--train_dataset_size", default=100000, type=int, dest="trai
 args = parser.parse_args()
 train_X, train_y = load_dataset_from_file('train.csv', args.train_dataset_size, True)
 
-n_estimators = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
+n_estimators = [5, 10, 15, 20, 25, 30, 50, 75, 100, 150, 200]
 param_grid = dict(n_estimators=n_estimators)
 
 grid = GridSearchCV(estimator=FastRandomForest(n_jobs=-1), param_grid=param_grid)
