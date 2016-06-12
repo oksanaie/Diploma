@@ -4,7 +4,9 @@ import numpy as np
 from features import *
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.neighbors import KNeighborsClassifier
+from sklearn.linear_model import LogisticRegression
 from sklearn import decomposition
+from sklearn.preprocessing import OneHotEncoder, MaxAbsScaler
 
 N_COMPONENTS = 10 # MAX 149
 
@@ -57,6 +59,8 @@ def parse_line(line, is_labeled, is_header=False):
         tokens = tokens[:21] + tokens[22:]
     return (tokens, label)
 
+CATEGORICAL_FEATURES = {1, 7, 8, 10, 11, 15, 18, 19}
+
 def get_features(line, is_labeled=True):
     (tokens, label) = parse_line(line, is_labeled)
     if tokens is None:
@@ -73,40 +77,52 @@ def get_features(line, is_labeled=True):
     weekends = 0
     if (check_in.weekday() == 4 or check_in.weekday() == 5) and (len_of_stay < 4):
         weekends = 1
-    extra_features = [len_of_stay, weekends,
-                  int(check_in.strftime('%j')), int(check_out.strftime('%j')), 
-                  int(check_in.month), int(check_out.month),
-                  int(check_in.strftime('%W')), int(check_out.strftime('%W'))]
-    extra_features += get_destination_features(int(tokens[SRCH_DESTINATION_ID]))
     # These are features that we will use as is:
     RAW_FEATURES = [
-        SITE_NAME, 
-        POSA_CONTINENT, 
-        USER_LOCATION_COUNTRY, 
-        USER_LOCATION_REGION,
-        USER_LOCATION_CITY,
-        ORIG_DESTINATION_DISTANCE,
-        USER_ID,
-        IS_MOBILE,
-        IS_PACKAGE,
-        CHANNEL,
-        SRCH_ADULTS_CNT,
-        SRCH_CHILDREN_CNT,
-        SRCH_RM_CNT,
-        SRCH_DESTINATION_ID,
-        SRCH_DESTINATION_TYPE_ID,
-        HOTEL_CONTINENT,
-        HOTEL_COUNTRY,
-        HOTEL_MARKET]
+        SITE_NAME, # 0 
+        POSA_CONTINENT, # 1 
+        USER_LOCATION_COUNTRY, # 2
+        USER_LOCATION_REGION, # 3
+        USER_LOCATION_CITY, # 4
+        ORIG_DESTINATION_DISTANCE, # 5
+        USER_ID, # 6
+        IS_MOBILE, # 7
+        IS_PACKAGE, # 8
+        CHANNEL, # 9
+        SRCH_ADULTS_CNT, # 10
+        SRCH_CHILDREN_CNT, # 11
+        SRCH_RM_CNT, # 12
+        SRCH_DESTINATION_ID, # 13
+        SRCH_DESTINATION_TYPE_ID, # 14
+        HOTEL_CONTINENT, # 15
+        HOTEL_COUNTRY, # 16
+        HOTEL_MARKET] # 17
+    extra_features = [
+        len_of_stay, # 18
+        weekends, # 19
+        int(check_in.strftime('%j')), # 20
+        int(check_out.strftime('%j')), # 21
+        int(check_in.month), # 22
+        int(check_out.month), # 23
+        int(check_in.strftime('%W')), # 24 
+        int(check_out.strftime('%W'))] # 25
+    extra_features += get_destination_features(int(tokens[SRCH_DESTINATION_ID])) # 26-35
+
     features = [
         tokens[raw_feature_id]
         for raw_feature_id in RAW_FEATURES] + extra_features
-    features = [
-        float (f) if f != '' else 0.0 
-        for f in features]
-    return (features, label)
 
-def load_dataset_from_file(filename, examples_count, is_labeled=True):
+    final_features = []
+    for i, f in enumerate(features):
+        if i in CATEGORICAL_FEATURES:
+            final_features.append(int (f) if f != '' else 0)
+        else:
+            final_features.append(float (f) if f != '' else 0.0)
+    assert len(final_features) == 36
+    return (final_features, float(label))
+
+
+def load_dataset_from_file(filename, examples_count, is_labeled=True, expand_categorical=True):
     data = open (filename, 'r').readlines()
     # Next two lines verifies that the parsing result of header is what
     # we expect.
@@ -128,7 +144,14 @@ def load_dataset_from_file(filename, examples_count, is_labeled=True):
         if len(data_X) % 100000 == 0:
             print "Processed %d rows, loaded %d examples." % (
                 cnt, len(data_X))
-    return (np.array(data_X), np.array(data_y) if is_labeled else None)
+    cat_X = data_X
+    if expand_categorical:
+        encoder = OneHotEncoder(categorical_features=list(CATEGORICAL_FEATURES), sparse=False)
+        cat_X = encoder.fit_transform(cat_X)
+        cat_X = MaxAbsScaler().fit_transform(cat_X)
+        print "Feature indices: ", encoder.feature_indices_
+        print "Cat_X shape: ", cat_X.shape
+    return (data_X, cat_X, np.array(data_y) if is_labeled else None)
 
 def _mean_average_precision(predicted_probability_distribution,
                             list_of_classes,
@@ -165,14 +188,13 @@ class FastRandomForest(RandomForestClassifier):
         return super(FastRandomForest, self).predict_proba(X)
 
     def predict_proba(self, X):
-        print "invoking fast predict_proba"
         ys = [
             self._predict_proba(X[i:i+self.BLOCK_SIZE])
             for i in xrange(0, len(X), self.BLOCK_SIZE)]
         return np.concatenate(ys)
 
     def score(self, X, y):
-        print "invoking custom score"
+        print "score (random forest)"
         predicted_probability_distribution = self.predict_proba(X)
         return _mean_average_precision(
             predicted_probability_distribution, self.classes_, y)
@@ -180,7 +202,28 @@ class FastRandomForest(RandomForestClassifier):
 class CustomKNN(KNeighborsClassifier):
 
     def score(self, X, y):
-        print "invoking custom score"
+        print "score (knn)"
         predicted_probability_distribution = self.predict_proba(X)
         return _mean_average_precision(
             predicted_probability_distribution, self.classes_, y)
+
+class FastLogisticRegression(LogisticRegression):
+
+    def _predict_proba(self, X):
+        return super(FastLogisticRegression, self).predict_proba(X)
+
+    def _fit(self, X, y, sample_weight=None):
+        return super(FastLogisticRegression, self).fit(X, y, sample_weight)
+
+    def predict_proba(self, X):
+        return self._predict_proba(X)
+
+    def fit(self, X, y, sample_weight=None):
+        print "fit (logistic_regression)"
+        return self._fit(X, y, sample_weight)
+
+    def score(self, X, y):
+        print "score (logistic_regression)"
+        predicted_probability_distribution = self.predict_proba(X)
+        return _mean_average_precision(
+            predicted_probability_distribution, self.classes_, y)    
