@@ -145,3 +145,27 @@ class FastRandomForest(RandomForestClassifier):
             self._predict_proba(X[i:i+self.BLOCK_SIZE])
             for i in xrange(0, len(X), self.BLOCK_SIZE)]
         return np.concatenate(ys)
+
+
+def mean_average_precision(predicted_probability_distribution,      
+                           list_of_classes,       
+                           test_y):       
+    total_error = 0
+    k = -1
+    for row in predicted_probability_distribution:
+        k += 1
+        prob_of_target_class = 0
+        place = 1
+        assert len(list_of_classes) == len(row)
+        for i in xrange(0, len(row)):
+            if list_of_classes[i] == test_y[k]:
+                prob_of_target_class = row[i]
+                break
+        for i in xrange(0, len(row)):
+            if (row[i] > prob_of_target_class
+                or (row[i] == prob_of_target_class and list_of_classes[i] > test_y[k])):
+                place += 1
+                if place >= 6: break
+        if place < 6:
+            total_error += 1.0 / place
+    return total_error / len(predicted_probability_distribution)
