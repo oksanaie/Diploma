@@ -66,7 +66,7 @@ def plot_max_depth(train_X, train_y):
 	plt.show()
 
 def plot_max_features(train_X, train_y):
-	param = range(1, 30)
+	param = range(1, 30, 2)
 	grid = GridSearchCV(
 		estimator=FastRandomForest(n_jobs=-1), 
 		param_grid=dict(max_features=param))
@@ -79,6 +79,23 @@ def plot_max_features(train_X, train_y):
 	plt.plot(param, scores)
 	plt.show()
 
+def plot_n_neighbours(train_X, train_y, weights):
+	param = [1, 5, 10, 20, 50, 75, 100]
+	grid = GridSearchCV(
+		estimator=CustomKNN(n_jobs=-1, weights=weights), 
+		param_grid=dict(n_neighbors=param))
+	grid.fit(train_X, train_y)
+
+	scores = [x[1] for x in grid.grid_scores_]
+	scores = np.array(scores).reshape(len(param))
+
+	plt.title('n_neighbors (%s)' % weights)
+	plt.plot(param, scores)
+	plt.show()
+
+
 #plot_n_estimators(allX, ally)
 #plot_max_depth(allX, ally)
-plot_max_features(allX, ally)
+#plot_max_features(allX, ally)
+plot_n_neighbours(allX, ally, 'uniform')
+plot_n_neighbours(allX, ally, 'distance')

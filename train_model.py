@@ -85,7 +85,7 @@ if args.model == "logistic_regression":
                                max_iter=10,
                                n_jobs=-1)
 elif args.model == "k_neighbors":
-    model = KNeighborsClassifier(n_neighbors=10, n_jobs=-1)
+    model = CustomKNN(n_neighbors=10, n_jobs=-1)
 else:
     model = FastRandomForest(n_estimators=100, max_depth=15, max_features=10, n_jobs=-1)
 

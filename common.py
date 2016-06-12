@@ -129,6 +129,30 @@ def load_dataset_from_file(filename, examples_count, is_labeled=True):
                 cnt, len(data_X))
     return (np.array(data_X), np.array(data_y) if is_labeled else None)
 
+def _mean_average_precision(predicted_probability_distribution,
+                            list_of_classes,
+                            test_y):
+    total_error = 0
+    k = -1
+    for row in predicted_probability_distribution:
+        k += 1
+        prob_of_target_class = 0
+        place = 1
+        assert len(list_of_classes) == len(row)
+        for i in xrange(0, len(row)):
+            if list_of_classes[i] == test_y[k]:
+                prob_of_target_class = row[i]
+                break
+        for i in xrange(0, len(row)):
+            if (row[i] > prob_of_target_class
+                or (row[i] == prob_of_target_class and list_of_classes[i] > test_y[k])):
+                place += 1
+                if place >= 6: break
+        if place < 6:
+            total_error += 1.0 / place
+    return total_error / len(predicted_probability_distribution)
+
+
 class FastRandomForest(RandomForestClassifier):
     """This black magic is needed since sklearn random forest 
        has memory issues at prediction time. It is a simple
@@ -148,33 +172,29 @@ class FastRandomForest(RandomForestClassifier):
 
     def score(self, X, y):
         print "invoking custom score"
-        return self.map5(X, y)
-
-    def map5(self, X, y):
         predicted_probability_distribution = self.predict_proba(X)
-        return self._mean_average_precision(
+        return _mean_average_precision(
             predicted_probability_distribution, self.classes_, y)
 
-    def _mean_average_precision(self,
-                                predicted_probability_distribution,
-                                list_of_classes,
-                                test_y):
-        total_error = 0
-        k = -1
-        for row in predicted_probability_distribution:
-            k += 1
-            prob_of_target_class = 0
-            place = 1
-            assert len(list_of_classes) == len(row)
-            for i in xrange(0, len(row)):
-                if list_of_classes[i] == test_y[k]:
-                    prob_of_target_class = row[i]
-                    break
-            for i in xrange(0, len(row)):
-                if (row[i] > prob_of_target_class
-                    or (row[i] == prob_of_target_class and list_of_classes[i] > test_y[k])):
-                    place += 1
-                    if place >= 6: break
-            if place < 6:
-                total_error += 1.0 / place
-        return total_error / len(predicted_probability_distribution)
+class CustomKNN(KNeighborsClassifier):
+    """This black magic is needed since sklearn random forest 
+       has memory issues at prediction time. It is a simple
+       bufferization over predict_proba() to avoid memory overuse."""
+
+    BLOCK_SIZE = 10000
+
+    def _predict_proba(self, X):
+        return super(KNeighborsClassifier, self).predict_proba(X)
+
+    def predict_proba(self, X):
+        print "invoking fast predict_proba"
+        ys = [
+            self._predict_proba(X[i:i+self.BLOCK_SIZE])
+            for i in xrange(0, len(X), self.BLOCK_SIZE)]
+        return np.concatenate(ys)
+
+    def score(self, X, y):
+        print "invoking custom score"
+        predicted_probability_distribution = self.predict_proba(X)
+        return _mean_average_precision(
+            predicted_probability_distribution, self.classes_, y)
