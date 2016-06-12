@@ -60,7 +60,7 @@ def plot_max_features(train_X, train_y):
 	plt.plot(param, scores)
 
 def plot_n_neighbours(train_X, train_y, weights):
-	param = [50, 100, 150, 200, 250, 300, 350, 400, 450, 500, 550, 600]
+	param = [1, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000]
 	grid = GridSearchCV(
 		estimator=CustomKNN(n_jobs=-1, weights=weights), 
 		param_grid=dict(n_neighbors=param))
