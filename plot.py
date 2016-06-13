@@ -152,7 +152,7 @@ def plot_learning_curve(train_X, train_y, estimator, title,
                  color=color_b,
                  label="Cross-validation score (%s)" % title)
 
-    plt.legend(loc="best")
+    plt.legend(loc="best", prop={'size':10})
     return plt, test_scores_mean[-1], test_scores_std[-1]
 
 def plot_regularization(train_X, train_y):
@@ -186,38 +186,38 @@ def save_and_clear(title):
     plt.close()
 
 ######## RANDOM FOREST #########
-plot_n_estimators(allX, ally)
-save_and_clear('rf.n_estimators')
+# plot_n_estimators(allX, ally)
+# save_and_clear('rf.n_estimators')
 
-plot_max_depth(allX, ally)
-save_and_clear('rf.max_depth')
+# plot_max_depth(allX, ally)
+# save_and_clear('rf.max_depth')
 
-plot_max_features(allX, ally)
-save_and_clear('rf.max_features')
+# plot_max_features(allX, ally)
+# save_and_clear('rf.max_features')
 
-plot_n_estimators_vs_max_depth(allX, ally)
-save_and_clear('rf.n_estimators_vs_max_depth')
+# plot_n_estimators_vs_max_depth(allX, ally)
+# save_and_clear('rf.n_estimators_vs_max_depth')
 
-plot_learning_curve(allX, ally, RANDOM_FOREST, 'Random Forest')
-save_and_clear('rf.learning_curve')
+# plot_learning_curve(allX, ally, RANDOM_FOREST, 'Random Forest')
+# save_and_clear('rf.learning_curve')
 
-# ######### KNN ###################
-plot_n_neighbours(catX, ally, 'uniform')
-plot_n_neighbours(catX, ally, 'distance')
-save_and_clear('knn.n_neighbors')
+# # ######### KNN ###################
+# plot_n_neighbours(catX, ally, 'uniform')
+# plot_n_neighbours(catX, ally, 'distance')
+# save_and_clear('knn.n_neighbors')
 
-plot_learning_curve(catX, ally, KNN, 'K Nearest Neighbors')
-save_and_clear('knn.learning_curve')
+# plot_learning_curve(catX, ally, KNN, 'K Nearest Neighbors')
+# save_and_clear('knn.learning_curve')
 
-######### LOGISTIC REGRESSION #####
-plot_regularization(catX, ally)
-save_and_clear('log_reg.c')
+# ######### LOGISTIC REGRESSION #####
+# plot_regularization(catX, ally)
+# save_and_clear('log_reg.c')
 
-plot_max_iter(catX, ally)
-save_and_clear('log_reg.max_iter')
+# plot_max_iter(catX, ally)
+# save_and_clear('log_reg.max_iter')
 
-plot_learning_curve(catX, ally, LOG_REGRESSION, 'Logistic Regression', n_jobs=1)
-save_and_clear('log_reg.learning_curve')
+# plot_learning_curve(catX, ally, LOG_REGRESSION, 'Logistic Regression', n_jobs=1)
+# save_and_clear('log_reg.learning_curve')
 
 ########## COMBINED #############
 plot_learning_curve(catX, ally, LOG_REGRESSION, 'Logistic Regression', n_jobs=1, color_a=None, color_b='r')
