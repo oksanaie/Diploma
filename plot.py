@@ -31,7 +31,7 @@ allX, catX, ally = load_dataset_from_file('train.csv', args.train_dataset_size, 
 DIR = "illustrations"
 CROSS_VALIDATION = cross_validation.ShuffleSplit(len(ally), n_iter=1, test_size=0.30, random_state=0)
 
-LOG_REGRESSION = FastLogisticRegression(C=100000,
+LOG_REGRESSION = FastLogisticRegression(C=1,
                                         max_iter=30, 
                                         n_jobs=-1)
 KNN = CustomKNN(n_neighbors=10, n_jobs=-1)
@@ -165,7 +165,7 @@ def plot_regularization(train_X, train_y):
     grid.fit(train_X, train_y)
     scores = [x[1] for x in grid.grid_scores_]
     scores = np.array(scores).reshape(len(param))
-    plt.plot(xrange(-10, 11), scores)
+    plt.plot(xrange(0, 21, 2), scores)
 
 def plot_max_iter(train_X, train_y):
     print "plot_max_iter()"
@@ -201,7 +201,7 @@ save_and_clear('rf.n_estimators_vs_max_depth')
 plot_learning_curve(allX, ally, RANDOM_FOREST, 'Random Forest')
 save_and_clear('rf.learning_curve')
 
-######### KNN ###################
+# ######### KNN ###################
 plot_n_neighbours(catX, ally, 'uniform')
 plot_n_neighbours(catX, ally, 'distance')
 save_and_clear('knn.n_neighbors')
@@ -210,14 +210,14 @@ plot_learning_curve(catX, ally, KNN, 'K Nearest Neighbors')
 save_and_clear('knn.learning_curve')
 
 ######### LOGISTIC REGRESSION #####
-plot_learning_curve(catX, ally, LOG_REGRESSION, 'Logistic Regression', n_jobs=1)
-save_and_clear('log_reg.learning_curve')
-
 plot_regularization(catX, ally)
 save_and_clear('log_reg.c')
 
 plot_max_iter(catX, ally)
 save_and_clear('log_reg.max_iter')
+
+plot_learning_curve(catX, ally, LOG_REGRESSION, 'Logistic Regression', n_jobs=1)
+save_and_clear('log_reg.learning_curve')
 
 ########## COMBINED #############
 plot_learning_curve(catX, ally, LOG_REGRESSION, 'Logistic Regression', n_jobs=1, color_a=None, color_b='r')
