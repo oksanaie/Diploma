@@ -1,17 +1,21 @@
 #!/usr/bin/python
+# To prepare a file for submission one needs to run this script first.
+# Then ./predict.py and ./leak.py. Resulting file 'final_predictions.csv'
+# is good for the submission.
+import argparse
+import numpy as np
 import time
-from sklearn.linear_model import LogisticRegression
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.neighbors import KNeighborsClassifier
+import matplotlib.pyplot as plt
+import pickle
+
+from termcolor import colored
+
 from sklearn.cross_validation import ShuffleSplit
 from sklearn.learning_curve import learning_curve
-import matplotlib.pyplot as plt
-from termcolor import colored
-import pickle
+from sklearn.linear_model import LogisticRegression
+
 from common import load_dataset_from_file
-from common import parse
-import numpy as np
-import argparse
+from common import FastRandomForest
 
 def plot_learning_curve(estimator, title, X, y, curve_points=5):
     plt.figure()
@@ -22,8 +26,8 @@ def plot_learning_curve(estimator, title, X, y, curve_points=5):
         estimator,
         X,
         y,
-#        train_sizes=np.linspace(.1, 1.0, curve_points),
-        train_sizes=np.logspace(0.0, 4.0, curve_points, base=1.0/3.0),
+        train_sizes=np.linspace(.1, 1.0, curve_points),
+#        train_sizes=np.logspace(0.0, 4.0, curve_points, base=1.0/3.0),
         n_jobs=-1)
     train_scores_mean = np.mean(train_scores, axis=1)
     train_scores_std = np.std(train_scores, axis=1)
@@ -54,7 +58,7 @@ def plot_learning_curve(estimator, title, X, y, curve_points=5):
 start_time = time.time()
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--model_filename", dest="model_filename")
+parser.add_argument("--model_filename", dest="model_filename", default="model")
 parser.add_argument(
     "--model", 
     choices=["random_forest", "k_neighbors", "logistic_regression"], 
@@ -77,15 +81,17 @@ if args.model == "logistic_regression":
     model = LogisticRegression(C=0.1, 
                                solver='lbfgs', 
                                multi_class='multinomial', 
-                               max_iter=100)
+                               max_iter=10,
+                               n_jobs=-1)
 elif args.model == "k_neighbors":
-    model = KNeighborsClassifier(n_neighbors=10, n_jobs=-1)
+    model = CustomKNN(n_neighbors=10, n_jobs=-1)
 else:
-    model = RandomForestClassifier(n_estimators=50, max_depth=15, n_jobs=-1)
+    model = FastRandomForest(n_estimators=100, max_depth=15, max_features=10, n_jobs=-1)
 
 if args.plot_learning_curve:
     print "Plotting learning curve."
-    plt, test_map_avg, test_map_std = plot_learning_curve(model, args.model, train_X, train_y, args.curve_points)
+    plt, test_map_avg, test_map_std = plot_learning_curve(
+        model, args.model, train_X, train_y, args.curve_points)
     print "Mean Average Precision on test: %.3f, 95%% confidence [%.3f, %.3f]" % (
         test_map_avg, 
         test_map_avg - 2. * test_map_std, 
@@ -94,12 +100,12 @@ if args.plot_learning_curve:
 else:
     print "Training model."
     model.fit(train_X, train_y)
-    print "Feature importances: "
-    for x in xrange (0, len(model.feature_importances_)):
-        print x, model.feature_importances_[x]
+    if args.model == "random_forest":
+        print "Feature importances: "
+        for x in xrange (0, len(model.feature_importances_)):
+            print x, model.feature_importances_[x]
     print "Saving model to %s." % args.model_filename
     with open(args.model_filename, 'wb') as model_file:
         pickle.dump(model, model_file)
 
 print "Elapsed time: %.3f" % (time.time() - start_time)
-
